@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * GlowHub design tokens. Hex values mirror src/config/brand.ts —
+ * change both together; contrast.test.ts checks the text pairings.
+ */
+@theme inline {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+
+  --color-plum: #342038;
+  --color-plum-600: #5f4b63;
+  --color-ink: #302420;
+  --color-rose: #b9527c;
+  --color-rose-700: #9c3f66;
+  --color-rose-800: #8a3459;
+  --color-cream: #fff7ef;
+  --color-blush: #f7e6ea;
+  --color-terracotta: #b96546;
+  --color-terracotta-700: #9a4e33;
+  --color-sage: #859681;
+  --color-sage-700: #5e6e5a;
+  --color-gold: #c59b5d;
+  --color-bronze: #a4684a;
+  --color-bronze-700: #9a6448;
+  --color-bronze-800: #87553c;
+  --color-danger: #a3302b;
+  --color-warning: #85570b;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.2);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #fff7ef;
+  --foreground: #342038;
+  --card: #ffffff;
+  --card-foreground: #342038;
+  --popover: #ffffff;
+  --popover-foreground: #342038;
+  --primary: #342038;
+  --primary-foreground: #fff7ef;
+  --secondary: #f7e6ea;
+  --secondary-foreground: #342038;
+  --muted: #f8eee6;
+  --muted-foreground: #5f4b63;
+  --accent: #f7e6ea;
+  --accent-foreground: #342038;
+  --destructive: #a3302b;
+  --border: #eddcd6;
+  --input: #dcc6c0;
+  --ring: #b9527c;
+  --chart-1: #342038;
+  --chart-2: #b9527c;
+  --chart-3: #b96546;
+  --chart-4: #c59b5d;
+  --chart-5: #5f4b63;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #342038;
+  --sidebar-primary: #342038;
+  --sidebar-primary-foreground: #fff7ef;
+  --sidebar-accent: #f7e6ea;
+  --sidebar-accent-foreground: #342038;
+  --sidebar-border: #eddcd6;
+  --sidebar-ring: #b9527c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Glow Scan hero: a scan line sweeping the frame (disabled by the reduced-motion rule above). */
+@keyframes glow-scan {
+  from {
+    top: 4%;
+  }
+  to {
+    top: 94%;
+  }
+}
+.animate-glow-scan {
+  animation: glow-scan 3.4s ease-in-out infinite alternate;
+}
