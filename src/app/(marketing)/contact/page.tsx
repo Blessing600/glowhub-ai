@@ -5,40 +5,41 @@ import { config } from "@/config/env";
 import { ContactForm } from "@/features/forms/contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with the GlowHub team.",
+  title: "Support",
+  description: "Get in touch with the GlowHub AI team about your account, Glow Scan or privacy.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
   const { supportEmail, privacyEmail } = config.legal;
   return (
     <>
-      <PageHeader eyebrow="Contact" title="Talk to us." intro="Questions about GlowHub, pilots or privacy? Send us a note." />
+      <PageHeader eyebrow="Support" title="We're here to help." intro="Questions about your account, Glow Scan or privacy? Send us a note." />
       <div className="bg-white py-12 sm:py-16">
         <Container className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-          <ContactForm />
+          <ContactForm supportEmail={supportEmail} />
           <div className="space-y-4 text-sm">
-            <div className="rounded-xl border p-5">
-              <h2 className="font-semibold">Support</h2>
-              <p className="mt-1 text-plum-600">
+            <div className="border-t border-line pt-5">
+              <h2 className="font-semibold text-plum">Support</h2>
+              <p className="mt-1 text-taupe">
                 {supportEmail ? (
-                  <a href={`mailto:${supportEmail}`} className="text-rose-700 underline underline-offset-4">
+                  <a href={`mailto:${supportEmail}`} className="text-plum underline decoration-rose underline-offset-4">
                     {supportEmail}
                   </a>
                 ) : (
-                  "Support email to be confirmed before launch."
+                  "Our support email is being confirmed. Please use the form."
                 )}
               </p>
             </div>
-            <div className="rounded-xl border p-5">
-              <h2 className="font-semibold">Privacy</h2>
-              <p className="mt-1 text-plum-600">
+            <div className="border-t border-line pt-5">
+              <h2 className="font-semibold text-plum">Privacy</h2>
+              <p className="mt-1 text-taupe">
                 {privacyEmail ? (
-                  <a href={`mailto:${privacyEmail}`} className="text-rose-700 underline underline-offset-4">
+                  <a href={`mailto:${privacyEmail}`} className="text-plum underline decoration-rose underline-offset-4">
                     {privacyEmail}
                   </a>
                 ) : (
-                  "Privacy contact to be confirmed before launch."
+                  "Our privacy contact is being confirmed. Please use the form and choose “Privacy”."
                 )}
               </p>
             </div>

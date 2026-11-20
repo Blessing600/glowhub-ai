@@ -7,7 +7,8 @@ import { PricingPlans } from "@/features/pricing/pricing-plans";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Proposed GlowHub plans in naira: Starter, Professional and Business, billed monthly or prepaid quarterly, six-monthly or annually.",
+    "GlowHub AI plans in naira: Starter, Professional and Business, billed monthly or prepaid quarterly, six-monthly or annually.",
+  alternates: { canonical: "/pricing" },
 };
 
 const rules = [
@@ -25,7 +26,7 @@ const rules = [
   },
   {
     title: "Failed payments",
-    body: "A proposed seven-day grace period with reminders, then read-only access. You can always export your data or close your account.",
+    body: "A seven-day grace period with reminders, then read-only access. You can always export your data or close your account.",
   },
   {
     title: "Refunds",
@@ -42,7 +43,7 @@ export default function PricingPage() {
     <>
       <PageHeader
         eyebrow="Pricing"
-        title="Simple plans in naira."
+        title="Plans in naira, built to grow with you."
         intro="Pay monthly, or prepay for three, six or twelve months and save. Every plan includes the core tools and GlowHub Intelligence."
       />
 
@@ -55,17 +56,14 @@ export default function PricingPage() {
       </Section>
 
       <Section headingId="rules-heading" tone="white" title="Billing, plainly explained">
-        <dl className="grid gap-4 md:grid-cols-2">
+        <dl className="grid gap-x-10 gap-y-8 md:grid-cols-2">
           {rules.map((rule) => (
-            <div key={rule.title} className="rounded-xl border p-5">
-              <dt className="font-semibold">{rule.title}</dt>
-              <dd className="mt-2 text-sm leading-relaxed text-plum-600">{rule.body}</dd>
+            <div key={rule.title} className="border-t border-line pt-5">
+              <dt className="font-semibold text-plum">{rule.title}</dt>
+              <dd className="mt-2 text-sm leading-relaxed text-taupe">{rule.body}</dd>
             </div>
           ))}
         </dl>
-        <p className="mt-6 text-sm text-plum-600">
-          GlowHub is pre-launch: no payments are taken on this site.
-        </p>
       </Section>
 
       <CtaBand />

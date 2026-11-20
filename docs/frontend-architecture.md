@@ -16,8 +16,7 @@ src/
     marketing/ consumer/ skin-scan/ products/ workspace/ forms/ charts/
     intelligence/ verification/ billing/ legal/
   features/<module>/   module-specific components, hooks and view logic
-  services/            typed service interfaces + mock implementations
-  mocks/               deterministic seed data
+  services/            typed API adapters (apiRequest → ServiceResult); no mock data
   lib/                 pure logic (money, pricing, stock, sales, reports) — no React
   config/              brand tokens, env/feature flags, pricing config
   types/               shared domain types
@@ -47,13 +46,12 @@ When a second consumer appears (e.g. the NestJS backend reusing pricing or valid
 move the folder into `packages/<name>` unchanged and switch to npm workspaces.
 
 ## Data and services
-- One deterministic seed (`src/mocks`) shared by marketing demo, consumer, merchant,
-  storefront and admin views, so status changes (e.g. quarantine) propagate everywhere.
-- Services expose typed async interfaces (`src/services/*`) consumed through TanStack
-  Query. Mock implementations read/write the in-memory seed; a future API client
-  implements the same interfaces. A "Reset demo" action restores the seed.
-- Persistence is in-memory or explicitly demo-only. Never persist face images, health
-  information, passwords or card data.
+- No fixture or seed data ships in production UI. Test fixtures live only in `*.test.*` files.
+- Backend calls go through typed adapters in `src/services/*`, built on `apiRequest`, which
+  returns `ok | not-connected | error`. With no `NEXT_PUBLIC_API_URL`, nothing is sent and the UI
+  shows an honest "not connected" state — never a simulated success.
+- Responses are validated with Zod before display. Contracts: `docs/frontend-api-contracts.md`.
+- Never persist face images, health information, passwords or card data in the browser.
 
 ## Calculations
 Money is integer minor units (`src/lib/money.ts`). Pricing, stock, sales, COGS, margin and
@@ -69,4 +67,4 @@ NestJS + PostgreSQL + Prisma on Azure (Container Apps, PostgreSQL Flexible Serve
 Storage, Azure OpenAI/Foundry, Document Intelligence, Service Bus, Key Vault, Monitor),
 per PRD §8. Paystack proposed for payments: server-initialised transactions, verified
 webhooks, idempotency and reconciliation — the client callback is never trusted.
-Integration contracts are documented in `docs/integration-contracts.md` (M5–M8).
+Integration contracts are documented in `docs/frontend-api-contracts.md`.

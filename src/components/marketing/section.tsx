@@ -2,65 +2,66 @@ import Link from "next/link";
 
 import { PhotoPlaceholder } from "@/components/marketing/photo-placeholder";
 import { Button } from "@/components/ui/button";
-import { glowScanCta } from "@/config/site";
-import type { IconItem } from "@/features/marketing/content";
+import { getStartedHref } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-/** Max-width container with the brief's 16px mobile / 32px desktop gutters. */
+/** Max-width container with 16px mobile / 24–32px desktop gutters. */
 export function Container({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8", className)} {...props} />;
 }
 
+/** Small editorial label: Manrope, widely tracked uppercase. */
 export function Eyebrow({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
-      className={cn("text-xs font-semibold tracking-[0.24em] text-rose-700 uppercase", className)}
+      className={cn("text-[11px] font-semibold tracking-[0.24em] text-rose-700 uppercase", className)}
       {...props}
     />
   );
 }
 
-export const sectionHeadingClass =
-  "font-display text-[2.25rem] leading-[1.05] font-medium tracking-[-0.01em] sm:text-[3rem] lg:text-[3.5rem]";
+/** Large editorial heading: Playfair Display, never used for dense UI. */
+export const displayHeadingClass =
+  "font-display text-[2.25rem] leading-[1.1] font-normal tracking-[-0.015em] text-balance text-plum sm:text-[2.75rem] lg:text-[3.25rem]";
+
+const tones = {
+  ivory: "bg-ivory",
+  white: "bg-white",
+  sand: "bg-sand",
+  plum: "bg-plum text-ivory",
+};
+export type Tone = keyof typeof tones;
 
 type SectionProps = Omit<React.ComponentProps<"section">, "title"> & {
   eyebrow?: string;
   title: React.ReactNode;
   intro?: React.ReactNode;
-  tone?: "cream" | "white" | "blush" | "plum";
+  tone?: Tone;
   /** id of the heading, used for aria-labelledby. */
   headingId: string;
-};
-
-const tones = {
-  cream: "bg-cream",
-  white: "bg-white",
-  blush: "bg-blush",
-  plum: "bg-plum text-cream",
 };
 
 export function Section({
   eyebrow,
   title,
   intro,
-  tone = "cream",
+  tone = "ivory",
   headingId,
   className,
   children,
   ...props
 }: SectionProps) {
+  const dark = tone === "plum";
   return (
-    <section aria-labelledby={headingId} className={cn("py-20 sm:py-28", tones[tone], className)} {...props}>
+    <section aria-labelledby={headingId} className={cn("py-24 sm:py-32 lg:py-40", tones[tone], className)} {...props}>
       <Container>
         <div className="max-w-3xl">
-          {eyebrow && <Eyebrow className={tone === "plum" ? "text-gold" : undefined}>{eyebrow}</Eyebrow>}
-          <h2 id={headingId} className={cn("mt-4", sectionHeadingClass)}>
+          {eyebrow && <Eyebrow className={dark ? "text-gold" : undefined}>{eyebrow}</Eyebrow>}
+          <h2 id={headingId} className={cn("mt-4", displayHeadingClass, dark && "text-ivory")}>
             {title}
           </h2>
           {intro && (
-            <div className={cn("mt-5 text-lg leading-relaxed", tone === "plum" ? "text-cream" : "text-plum")}>
-              {intro}
-            </div>
+            <div className={cn("mt-5 text-lg leading-relaxed", dark ? "text-ivory" : "text-taupe")}>{intro}</div>
           )}
         </div>
         <div className="mt-12 sm:mt-16">{children}</div>
@@ -69,9 +70,9 @@ export function Section({
   );
 }
 
-export type PhotoSlot = { shot: string; folder: string; src?: string; alt?: string };
+export type PhotoSlot = { shot: string; folder: string; src?: string; alt?: string; position?: string };
 
-/** Page-level heading block for inner marketing pages, optionally with an editorial photo. */
+/** Page-level heading block for inner pages, optionally with an editorial photo. */
 export function PageHeader({
   eyebrow,
   title,
@@ -86,7 +87,7 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden bg-cream">
+    <div className="overflow-hidden bg-ivory">
       <Container
         className={cn(
           "pt-14 pb-16 sm:pt-20 sm:pb-20",
@@ -95,10 +96,10 @@ export function PageHeader({
       >
         <div className={cn("max-w-3xl", photo && "lg:col-span-6")}>
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-          <h1 className="mt-5 font-display text-[2.5rem] leading-[1.04] font-medium tracking-[-0.01em] sm:text-[3.5rem] lg:text-[4.25rem]">
+          <h1 className="mt-5 font-display text-[2.5rem] leading-[1.06] font-normal tracking-[-0.02em] text-balance text-plum sm:text-[3.5rem] lg:text-[4rem]">
             {title}
           </h1>
-          {intro && <div className="mt-6 max-w-2xl text-lg leading-relaxed sm:text-xl">{intro}</div>}
+          {intro && <div className="mt-6 max-w-2xl text-lg leading-relaxed text-taupe sm:text-xl">{intro}</div>}
           {children && <div className="mt-9 flex flex-wrap gap-3">{children}</div>}
         </div>
         {photo && (
@@ -115,64 +116,71 @@ export function PageHeader({
 }
 
 /** Open list with top rules — lighter than boxed cards. */
-export function IconGrid({ items, columns = 3 }: { items: readonly IconItem[]; columns?: 2 | 3 }) {
+export function RuledList({
+  items,
+  columns = 3,
+}: {
+  items: ReadonlyArray<{ title: string; body: string }>;
+  columns?: 2 | 3;
+}) {
   return (
     <ul
       className={cn(
-        "grid gap-x-10 gap-y-12 sm:grid-cols-2",
+        "grid gap-x-10 gap-y-10 sm:grid-cols-2",
         columns === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2",
       )}
     >
-      {items.map(({ icon: Icon, title, body }) => (
-        <li key={title} className="border-t border-plum/15 pt-6">
-          <span className="flex size-12 items-center justify-center rounded-full bg-blush">
-            <Icon aria-hidden className="size-5 text-rose-800" />
-          </span>
-          <h3 className="mt-5 text-xl font-semibold">{title}</h3>
-          <p className="mt-2 text-base leading-relaxed text-plum-600">{body}</p>
+      {items.map(({ title, body }) => (
+        <li key={title} className="border-t border-plum/20 pt-5">
+          <h3 className="text-lg font-semibold text-plum">{title}</h3>
+          <p className="mt-2 leading-relaxed text-taupe">{body}</p>
         </li>
       ))}
     </ul>
   );
 }
 
-/** Closing editorial band shared by marketing pages: wide photo with a plum panel overlapping it. */
+/** Closing band shared by marketing pages: one strong action on deep plum. */
 export function CtaBand({
-  title = "Be first to try GlowHub.",
-  body = "We're recruiting a small group of beauty businesses for pilots. Join early access to hear when it opens.",
+  title = "Bring intelligence to your beauty business.",
+  body = "Your workspace is minutes away.",
 }: {
   title?: string;
   body?: string;
 }) {
   return (
-    <section aria-labelledby="cta-band-heading" className="bg-cream py-20 sm:py-28">
-      <Container className="grid items-center lg:grid-cols-12">
-        <PhotoPlaceholder
-          shot="Closing: two friends laughing at a vanity, skincare between them, warm evening light."
-          folder="beauty-editorial"
-          src="/images/beauty-editorial/friends-masks.webp"
-          alt="Three friends laughing together while wearing skincare masks."
-          sizes="(min-width: 1024px) 66vw, 100vw"
-          className="aspect-[4/3] lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:aspect-[16/10]"
-        />
-        <div className="relative mx-3 -mt-16 rounded-xl bg-plum p-8 text-cream sm:mx-8 sm:p-10 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:mx-0 lg:mt-0">
-          <h2 id="cta-band-heading" className="font-display text-[2.25rem] leading-[1.05] font-medium sm:text-[3rem]">
-            {title}
-          </h2>
-          <p className="mt-4 text-lg">{body}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="bg-cream text-plum hover:bg-blush">
-              <Link href="/early-access">Get early access</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-cream bg-transparent text-cream hover:bg-cream/10 hover:text-cream"
+    <section aria-labelledby="cta-band-heading" className="bg-ivory py-20 sm:py-32">
+      <Container>
+        <div className="grid overflow-hidden rounded-lg bg-plum text-ivory lg:grid-cols-12">
+          <div className="flex flex-col justify-center p-8 sm:p-14 lg:col-span-7 lg:p-20">
+            <h2
+              id="cta-band-heading"
+              className="max-w-xl font-display text-[2.25rem] leading-[1.1] font-normal tracking-[-0.015em] text-balance sm:text-[3rem]"
             >
-              <Link href={glowScanCta.href}>{glowScanCta.label}</Link>
-            </Button>
+              {title}
+            </h2>
+            <p className="mt-5 max-w-xl text-lg text-ivory">{body}</p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Button asChild size="lg" variant="ivory">
+                <Link href={getStartedHref}>Get started</Link>
+              </Button>
+              <Link
+                href="/how-it-works"
+                className="inline-flex min-h-11 items-center font-semibold text-ivory underline decoration-rose underline-offset-4 hover:decoration-2"
+              >
+                See how it works
+              </Link>
+            </div>
           </div>
+          <PhotoPlaceholder
+            shot="Closing: one hand passing a skincare dropper bottle to another."
+            folder="skincare-products"
+            src="/images/skincare-products/dropper-hands.webp"
+            alt=""
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            position="50% 50%"
+            className="aspect-[16/9] rounded-none lg:col-span-5 lg:aspect-auto lg:min-h-[28rem]"
+          />
         </div>
       </Container>
     </section>

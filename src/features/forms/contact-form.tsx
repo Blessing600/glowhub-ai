@@ -7,17 +7,18 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   CheckboxField,
-  mockSubmit,
-  PrototypeNotice,
   SelectField,
+  ServiceNotice,
   SubmittedPanel,
   TextareaField,
   TextField,
 } from "@/features/forms/form-parts";
 import { contactSchema, contactTopics, type ContactValues } from "@/features/forms/schemas";
+import { sendSupportMessage } from "@/services/accounts";
 
-export function ContactForm() {
-  const [submitted, setSubmitted] = useState<ContactValues | null>(null);
+export function ContactForm({ supportEmail }: { supportEmail?: string }) {
+  const [sent, setSent] = useState<{ name: string; reference: string } | null>(null);
+  const [outcome, setOutcome] = useState<"not-connected" | "error" | null>(null);
   const {
     register,
     handleSubmit,
@@ -27,13 +28,12 @@ export function ContactForm() {
     defaultValues: { name: "", email: "", message: "", marketingConsent: false },
   });
 
-  if (submitted) {
+  if (sent) {
     return (
-      <SubmittedPanel title="Message checked">
+      <SubmittedPanel title="Message sent">
         <p>
-          Thanks, {submitted.name}. Your message was valid, but because this is a prototype it was not sent or stored.
+          Thanks, {sent.name}. Your reference is <strong className="text-ink">{sent.reference}</strong>.
         </p>
-        <p>Once GlowHub has a confirmed support contact, this form will deliver messages to the team.</p>
       </SubmittedPanel>
     );
   }
@@ -41,13 +41,26 @@ export function ContactForm() {
   return (
     <form
       noValidate
-      onSubmit={handleSubmit(async (values) => {
-        await mockSubmit();
-        setSubmitted(values);
+      onSubmit={handleSubmit(async (values: ContactValues) => {
+        const result = await sendSupportMessage(values);
+        if (result.status === "ok") return setSent({ name: values.name, reference: result.data.reference });
+        setOutcome(result.status);
       })}
-      className="space-y-5 rounded-xl border bg-cream p-5 sm:p-6"
+      className="space-y-5 rounded-lg border border-line bg-white p-5 sm:p-7"
     >
-      <PrototypeNotice>Prototype form: nothing you enter is sent or stored.</PrototypeNotice>
+      {outcome && (
+        <ServiceNotice outcome={outcome} feature="Online messaging">
+          {supportEmail ? (
+            <>
+              Your message was not sent. Please email{" "}
+              <a href={`mailto:${supportEmail}`} className="font-semibold text-plum underline underline-offset-4">
+                {supportEmail}
+              </a>{" "}
+              instead — your entries are still here to copy.
+            </>
+          ) : undefined}
+        </ServiceNotice>
+      )}
       <TextField label="Your name" autoComplete="name" registration={register("name")} error={errors.name} />
       <TextField
         label="Email"
@@ -69,7 +82,7 @@ export function ContactForm() {
         error={errors.marketingConsent}
       />
       <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto">
-        {isSubmitting ? "Checking…" : "Send message"}
+        {isSubmitting ? "Sending…" : "Send message"}
       </Button>
     </form>
   );

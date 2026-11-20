@@ -21,7 +21,7 @@ const lockedOff = (feature: string, gate: string) =>
     .enum(["true", "false"])
     .optional()
     .refine((v) => v !== "true", {
-      message: `${feature} cannot be enabled in the frontend prototype. See ${gate}.`,
+      message: `${feature} cannot be enabled until its release gates are met. See ${gate}.`,
     })
     .transform(() => false as const);
 
@@ -36,11 +36,10 @@ export const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
   NEXT_PUBLIC_API_URL: optionalText,
   NEXT_PUBLIC_ALLOW_INDEXING: bool(false),
-  NEXT_PUBLIC_DEMO_MODE: bool(true),
   NEXT_PUBLIC_CAMERA_PREVIEW_ENABLED: bool(true),
-  NEXT_PUBLIC_LIVE_SCAN_ENABLED: lockedOff("Live Glow Scan analysis", "docs/glow-scan-release-gates.md"),
+  NEXT_PUBLIC_LIVE_SCAN_ENABLED: lockedOff("Live Glow Scan analysis", "docs/frontend-api-contracts.md §Glow Scan"),
   NEXT_PUBLIC_MARKETPLACE_ENABLED: lockedOff("The multi-vendor marketplace", "PRD §9 marketplace operational gates"),
-  NEXT_PUBLIC_PAYMENTS_ENABLED: lockedOff("Live payments", "docs/integration-contracts.md"),
+  NEXT_PUBLIC_PAYMENTS_ENABLED: lockedOff("Live payments", "docs/frontend-api-contracts.md §Payments"),
   NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(["paystack"]).default("paystack"),
   NEXT_PUBLIC_LEGAL_ENTITY_NAME: optionalText,
   NEXT_PUBLIC_LEGAL_REGISTRATION_NUMBER: optionalText,
@@ -62,7 +61,6 @@ function toConfig(env: z.infer<typeof envSchema>) {
     allowIndexing:
       env.NEXT_PUBLIC_DEPLOY_ENV === "production" && env.NEXT_PUBLIC_ALLOW_INDEXING,
     features: {
-      demoMode: env.NEXT_PUBLIC_DEMO_MODE,
       cameraPreview: env.NEXT_PUBLIC_CAMERA_PREVIEW_ENABLED,
       liveScan: env.NEXT_PUBLIC_LIVE_SCAN_ENABLED,
       marketplace: env.NEXT_PUBLIC_MARKETPLACE_ENABLED,
@@ -98,7 +96,6 @@ export const config = parseConfig({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_ALLOW_INDEXING: process.env.NEXT_PUBLIC_ALLOW_INDEXING,
-  NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE,
   NEXT_PUBLIC_CAMERA_PREVIEW_ENABLED: process.env.NEXT_PUBLIC_CAMERA_PREVIEW_ENABLED,
   NEXT_PUBLIC_LIVE_SCAN_ENABLED: process.env.NEXT_PUBLIC_LIVE_SCAN_ENABLED,
   NEXT_PUBLIC_MARKETPLACE_ENABLED: process.env.NEXT_PUBLIC_MARKETPLACE_ENABLED,

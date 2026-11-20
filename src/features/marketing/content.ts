@@ -1,207 +1,151 @@
 /**
- * Shared public-site copy. No metrics, customers, testimonials or partners —
- * GlowHub is pre-launch.
+ * Shared public-site copy. Describes capabilities only: no customer counts,
+ * testimonials, revenue, partners or example business data. Anything that depends
+ * on a backend says so where it matters (see docs/frontend-api-contracts.md).
  */
-import {
-  BadgeCheck,
-  BarChart3,
-  Boxes,
-  CalendarClock,
-  ClipboardList,
-  FlaskConical,
-  HeartHandshake,
-  type LucideIcon,
-  MessageCircleQuestion,
-  ScanFace,
-  Sparkles,
-  Store,
-  Users,
-} from "lucide-react";
 
-export type IconItem = { icon: LucideIcon; title: string; body: string };
+export type TextItem = { title: string; body: string };
 
-export const businessCapabilities: readonly IconItem[] = [
+/** The connected parts of a beauty business (homepage §2). */
+export const complexityThreads: ReadonlyArray<TextItem & { label: string }> = [
+  { label: "Customers", title: "Who needs what", body: "Skin concerns, preferences, budgets and the questions people ask before they buy." },
+  { label: "Sales", title: "What actually moved", body: "Which products sell, to whom, through which channel, and what came back." },
+  { label: "Shelf", title: "What you can sell today", body: "Stock by batch, expiry dates and the products quietly running low." },
+  { label: "Margins", title: "What you really earn", body: "Supplier costs, prices and discounts — the difference between busy and profitable." },
+  { label: "Decisions", title: "What to do next", body: "Reorder, promote, follow up or wait. Every day, with incomplete information." },
+];
+
+/** How GlowHub Intelligence builds an insight (homepage §3). */
+export const intelligenceAnatomy: ReadonlyArray<TextItem> = [
+  { title: "You ask in plain language", body: "Ask about sales, stock, customers or margins the way you would ask a trusted manager." },
+  { title: "It reads only your authorised records", body: "Answers draw on your own workspace — sales, batches, supplier costs — never on guesses or other businesses' data." },
+  { title: "It shows its working", body: "Each answer cites the records it used and the calculation behind it, and says plainly when information is missing." },
+  { title: "You decide", body: "Suggested reorders, price changes or messages wait as drafts until you review and approve them." },
+];
+
+/** Sell smarter journeys (homepage §4). Each ties to a business outcome. */
+export const sellingJourneys: ReadonlyArray<TextItem & { outcome: string }> = [
   {
-    icon: Boxes,
-    title: "Stock and expiry",
-    body: "Batches, expiry dates and stock movements in one place, with first-expiry-first-out suggestions and low-stock alerts.",
+    title: "Guided recommendations",
+    body: "Suggest products you actually stock, with ingredient reasons, prices and cautions.",
+    outcome: "More confident purchases",
   },
   {
-    icon: Sparkles,
-    title: "GlowHub Intelligence",
-    body: "Ask about sales, margins and stock in plain language. Answers link to your records and show their working.",
+    title: "Consultation support",
+    body: "Give every staff member the same structured consultation, with safety screening built in.",
+    outcome: "Consistent advice, every shift",
   },
   {
-    icon: HeartHandshake,
-    title: "Consultations",
-    body: "Guide customers to suitable products you actually stock, with ingredient reasons, budget and safety checks.",
+    title: "Product matching",
+    body: "Match budgets, sensitivities and goals to in-stock products — never expired or recalled batches.",
+    outcome: "Fewer returns and disappointments",
   },
   {
-    icon: BadgeCheck,
-    title: "Supplier evidence",
-    body: "Organise invoices and batch evidence, flag mismatches for human review and record every decision.",
+    title: "Customer understanding",
+    body: "Keep preferences, purchases and consent together, so you know each customer a little better each visit.",
+    outcome: "Relationships, not transactions",
   },
   {
-    icon: Users,
-    title: "Sales and customers",
-    body: "Record sales once and stock updates once. Keep customer preferences and consent together.",
-  },
-  {
-    icon: Store,
-    title: "Storefront",
-    body: "A mobile catalogue of your stock with evidence status and an enquiry button — no marketplace required.",
+    title: "Thoughtful follow-ups",
+    body: "Draft a replenishment or check-in message when a product is likely running out — sent only when you approve.",
+    outcome: "Repeat sales",
   },
 ];
 
-/** Feature names from the brief §4. `status` describes prototype scope honestly. */
-export const features: ReadonlyArray<IconItem & { name: string; status: string; points: readonly string[] }> = [
+/** Operations modules shown on the homepage and product page (homepage §5). */
+export const operationsModules: ReadonlyArray<{
+  id: string;
+  name: string;
+  summary: string;
+  columns: readonly string[];
+  empty: string;
+}> = [
   {
-    name: "Glow Intelligence",
-    icon: Sparkles,
-    title: "Answers grounded in your business records",
-    body: "Ask which products to restock, what sold best this month or where margin is slipping.",
-    status: "Shown in the interactive demo with fictional data",
-    points: [
-      "Calculations come from your records, with the formula shown",
-      "Says when evidence is missing instead of guessing",
-      "Suggestions only — you approve any stock, price or purchase change",
-    ],
+    id: "inventory",
+    name: "Inventory",
+    summary: "Stock by batch with expiry dates, movements and reasons for every adjustment.",
+    columns: ["Product", "Batch", "Expires", "On hand", "Status"],
+    empty: "No stock recorded yet. Receive your first delivery against a batch and expiry date.",
   },
   {
-    name: "Glow Match",
-    icon: HeartHandshake,
-    title: "Consultations matched to real stock",
-    body: "Budget, routine and preferences in; suitable in-stock products, reasons and prices out.",
-    status: "Shown in the interactive demo with fictional data",
-    points: [
-      "Recommends only products in the catalogue, at their real price",
-      "Respects allergies you list and stays within budget",
-      "Stops and refers to qualified care for medical symptoms",
-    ],
+    id: "products",
+    name: "Products",
+    summary: "A catalogue with ingredients, sizes, prices, suppliers and registration references.",
+    columns: ["Product", "Category", "Size", "Price (₦)", "Ingredients"],
+    empty: "Your catalogue is empty. Import a spreadsheet or add products one at a time.",
   },
   {
-    name: "Glow Check",
-    icon: FlaskConical,
-    title: "Ingredient intelligence",
-    body: "Understand what each ingredient does, spot common irritants and overlapping actives, and see what's missing.",
-    status: "Planned for the prototype consumer and workspace milestones",
-    points: [
-      "Ingredient roles and known irritants, with source and date",
-      "Flags incomplete ingredient lists rather than claiming compatibility",
-      "No guarantee of individual tolerance — patch testing still applies",
-    ],
+    id: "suppliers",
+    name: "Suppliers",
+    summary: "Supplier records and invoice evidence, with mismatches flagged for a person to review.",
+    columns: ["Supplier", "Last delivery", "Evidence", "Review status"],
+    empty: "No suppliers yet. Add one when you record your first delivery.",
   },
   {
-    name: "Glow Verify",
-    icon: BadgeCheck,
-    title: "Supplier evidence review",
-    body: "Extract supplier, batch, expiry and registration details from invoices and flag mismatches for a person to review.",
-    status: "Shown in the interactive demo with fictional data",
-    points: [
-      "Human reviewers decide; AI never declares a product genuine or fake",
-      "A registration number or barcode is not proof a unit is genuine",
-      "Badges state exactly which review was completed, and when",
-    ],
+    id: "sales",
+    name: "Sales",
+    summary: "Record each sale once; stock updates once. Payment status and refunds stay with the sale.",
+    columns: ["Date", "Customer", "Items", "Total (₦)", "Payment"],
+    empty: "No sales yet. Your first recorded sale will appear here.",
   },
   {
-    name: "Glow Routine",
-    icon: CalendarClock,
-    title: "Simple morning and evening routines",
-    body: "Turn a consultation into an ordered routine with general usage notes and cautions.",
-    status: "Shown in the interactive demo with fictional data",
-    points: [
-      "Clear step order for morning and evening",
-      "General guidance only — follow manufacturer instructions",
-      "Saved only if the shopper chooses to save it",
-    ],
+    id: "staff",
+    name: "Staff",
+    summary: "Invite your team with roles and permissions that match how your business works.",
+    columns: ["Name", "Role", "Location", "Last active"],
+    empty: "Only you so far. Invite staff and choose what each person can see and do.",
   },
   {
-    name: "Glow Scan",
-    icon: ScanFace,
-    title: "Optional photo-guided consultation",
-    body: "A future, opt-in way to start a consultation from a photo. Text-only consultation is always available.",
-    status: "Sample only in this prototype — live photo analysis is switched off",
-    points: [
-      "The demo uses a fictional sample image with scripted observations",
-      "Camera preview stays on your device; photos are not analysed or stored",
-      "Live analysis needs safety, fairness and privacy review before any pilot",
-    ],
+    id: "reports",
+    name: "Reports",
+    summary: "Revenue, gross profit, best sellers, stock ageing and expiry — calculated from your records.",
+    columns: ["Report", "Period", "Based on"],
+    empty: "Reports appear once you have recorded products, stock and sales.",
   },
 ];
 
-export const coreManagement: readonly string[] = [
-  "Catalogue with ingredients, sizes, prices and supplier details",
-  "Batch, expiry and stock movement history",
-  "Sales, payments status, refunds and receipts",
-  "Customer records with consent and opt-outs",
-  "Reports: revenue, gross profit, stock ageing and expiry",
-  "Team roles and permissions",
-];
-
-export const audiences: readonly IconItem[] = [
+/** Who GlowHub serves (homepage §6, Solutions). */
+export const audiences: ReadonlyArray<TextItem & { id: string }> = [
   {
-    icon: Store,
-    title: "Independent skincare retailers",
-    body: "Track stock, batches, sales and customers, and give reliable product guidance.",
+    id: "retail",
+    title: "Skincare retailers",
+    body: "Know what's on the shelf, what's expiring and what to reorder — and guide every customer to products you actually have.",
   },
   {
-    icon: Sparkles,
-    title: "Beauty brand owners",
-    body: "Manage catalogue and inventory, retailer orders, customer education and performance.",
+    id: "brands",
+    title: "Beauty brands",
+    body: "Keep your catalogue, ingredients and stock in order, educate customers clearly and see which products are earning their place.",
   },
   {
-    icon: Boxes,
-    title: "Beauty distributors",
-    body: "Keep supplier evidence, stock and business-to-business sales organised.",
+    id: "salons",
+    title: "Salons and spas",
+    body: "Record consultations, recommend retail products with care, and turn great appointments into repeat purchases.",
   },
   {
-    icon: HeartHandshake,
-    title: "Salons, spas and professionals",
-    body: "Record consultations, recommend products you stock and manage repeat purchases.",
-  },
-  {
-    icon: MessageCircleQuestion,
-    title: "Shoppers",
-    body: "Find suitable products, understand ingredients and buy from participating sellers.",
+    id: "distributors",
+    title: "Distributors",
+    body: "Organise supplier evidence, batches and business-to-business orders across locations, with a clear audit trail.",
   },
 ];
 
-export const howItWorksSteps: ReadonlyArray<{ title: string; body: string; icon: LucideIcon }> = [
-  {
-    icon: Users,
-    title: "Set up your workspace",
-    body: "Create your business, choose currency and location, and invite staff with the right roles. Start on a 14-day trial with no card.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Add your catalogue",
-    body: "Import products from a spreadsheet or add them one by one: ingredients, sizes, prices, supplier and registration details. Missing evidence is shown, not hidden.",
-  },
-  {
-    icon: Boxes,
-    title: "Record stock by batch",
-    body: "Receive stock against batches with expiry dates and costs. Every adjustment needs a reason, and stock balances always reconcile.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Run consultations",
-    body: "Staff or shoppers answer a short questionnaire. GlowHub suggests in-stock products with reasons, prices and safety notes for a person to review.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Review supplier evidence",
-    body: "Upload invoices and batch evidence. GlowHub extracts the fields and flags gaps; a human reviewer approves, rejects or asks for more.",
-  },
-  {
-    icon: Store,
-    title: "Record sales",
-    body: "Each confirmed sale deducts stock exactly once. Payment status, refunds and receipts stay with the sale.",
-  },
-  {
-    icon: BarChart3,
-    title: "See what's working",
-    body: "Reports on revenue, gross profit, best sellers, expiry and repeat customers — and plain-language answers from GlowHub Intelligence.",
-  },
+/** Trust and responsibility (homepage §7). */
+export const trustPrinciples: readonly TextItem[] = [
+  { title: "AI suggests, people decide", body: "Stock changes, purchase drafts, prices, messages and refunds always wait for explicit approval." },
+  { title: "Grounded, not guessed", body: "Insights cite your records and say when evidence is missing. AI suggestions are labelled apart from calculated figures." },
+  { title: "Evidence, not verdicts", body: "Supplier documents are checked field by field and a person decides. A barcode or registration number alone proves nothing about a unit." },
+  { title: "Only sellable stock", body: "Expired, recalled and quarantined batches are kept out of recommendations and sales." },
+  { title: "Privacy by design", body: "Each business's records stay in its own workspace. Customer details need consent, and we don't train models on your private data." },
+  { title: "Cosmetic guidance only", body: "No diagnosis, no skin-tone or age scoring, no lightening goals. Symptoms that need care are referred to qualified professionals." },
+];
+
+/** Getting started (How it works page). */
+export const howItWorksSteps: readonly TextItem[] = [
+  { title: "Create your workspace", body: "Add your business, currency and location, then invite staff with the right roles." },
+  { title: "Add your catalogue", body: "Import products from a spreadsheet or add them one by one — ingredients, sizes, prices and suppliers. Missing details are flagged, not hidden." },
+  { title: "Record stock by batch", body: "Receive deliveries against batches with expiry dates and costs. Every adjustment needs a reason, so balances always reconcile." },
+  { title: "Sell and consult", body: "Record sales once and stock updates once. Use guided consultations to recommend in-stock products with reasons and cautions." },
+  { title: "Ask GlowHub Intelligence", body: "Ask what to reorder, what's selling or where margin is slipping. Answers show their working; actions wait for your approval." },
+  { title: "Connect Glow Scan", body: "Let shoppers find your products through Glow Scan's guided, privacy-first consultation." },
 ];
 
 export type FaqItem = { question: string; answer: string; topic: string };
@@ -209,68 +153,50 @@ export type FaqItem = { question: string; answer: string; topic: string };
 export const faqs: readonly FaqItem[] = [
   {
     topic: "Product",
-    question: "What is GlowHub?",
+    question: "What is GlowHub AI?",
     answer:
-      "GlowHub is a proposed operating system for beauty businesses — stock, sales, customers, consultations and supplier evidence — with AI built into each workflow. Shoppers get product discovery and consultation through participating sellers' storefronts.",
-  },
-  {
-    topic: "Launch",
-    question: "Can I use GlowHub today?",
-    answer:
-      "Not yet. GlowHub is pre-launch. This site and its demo are an interactive prototype with fictional data. Join early access to hear about pilots and launch.",
+      "GlowHub AI is a selling and business-intelligence platform for beauty businesses — skincare retailers, beauty brands, salons, spas and distributors. It brings products, stock, sales, customers and suppliers together, with AI built into each workflow to help you sell smarter and decide with confidence.",
   },
   {
     topic: "Product",
-    question: "Is there a marketplace?",
+    question: "Is GlowHub a marketplace?",
     answer:
-      "Not at launch. GlowHub starts as business software that is useful on its own. A connected marketplace may follow once seller coverage, trust processes and delivery are ready.",
+      "No. GlowHub is software for running and growing your own beauty business. Shoppers can discover participating merchants' products through Glow Scan, but there is no GlowHub checkout or multi-seller cart.",
   },
   {
-    topic: "Camera",
+    topic: "Product",
+    question: "How does GlowHub Intelligence use my data?",
+    answer:
+      "It reads only the records in your own workspace that your role allows, cites them in its answers and shows how figures were calculated. Suggested actions — reorders, price changes, messages — are drafts until you approve them. We don't train AI models on your private business data.",
+  },
+  {
+    topic: "Glow Scan",
     question: "What happens to my photo in Glow Scan?",
     answer:
-      "In this prototype, live photo analysis is switched off. Any camera preview stays on your device: it is not uploaded, stored or analysed. The demo uses a fictional sample image with scripted observations. You can always use a text-only consultation instead.",
+      "A photo is always optional. Today, photo analysis is not connected: any photo you add stays on your device as a preview and is not uploaded, stored or analysed. Before photo analysis is ever switched on, Glow Scan will ask for your separate permission and explain who processes the photo and how long it is kept.",
   },
   {
-    topic: "Safety",
-    question: "Can GlowHub diagnose skin conditions?",
+    topic: "Glow Scan",
+    question: "Can Glow Scan diagnose skin conditions?",
     answer:
-      "No. GlowHub gives cosmetic guidance only. It does not diagnose, prescribe or replace a qualified clinician. If you have severe or persistent symptoms, a worsening rash, signs of infection or a suspected allergic reaction, please see a qualified healthcare professional. For breathing difficulty or other emergency signs, get urgent medical help.",
+      "No. Glow Scan gives cosmetic guidance only. It does not diagnose, prescribe or replace a qualified clinician. If you have pain, bleeding, a spreading rash, signs of infection or a problem that won't improve, it stops suggesting products and recommends professional care. For breathing difficulty or facial swelling, get urgent medical help.",
   },
   {
-    topic: "Authenticity",
+    topic: "Trust",
     question: "Does GlowHub guarantee products are authentic?",
     answer:
-      "No. GlowHub helps businesses organise supplier evidence and flags mismatches for human review. A badge states exactly which review was completed and when. A registration number or barcode alone is not proof that a particular unit is genuine.",
+      "No. GlowHub helps businesses organise supplier evidence and flags mismatches for a person to review. Any badge says exactly which review was completed and when. A registration number or barcode alone is not proof that a particular unit is genuine.",
   },
   {
     topic: "Plans",
-    question: "How much will GlowHub cost?",
+    question: "How is GlowHub priced?",
     answer:
-      "Proposed launch plans are Starter ₦10,000, Professional ₦25,000 and Business ₦60,000 per month, with discounts for quarterly, six-month and annual prepayment. Prices are a hypothesis we are testing with pilot businesses and may change before launch.",
-  },
-  {
-    topic: "Plans",
-    question: "Will the free trial charge me automatically?",
-    answer:
-      "No. The proposed 14-day Professional trial needs no card and does not convert to a paid plan automatically.",
+      "Plans are priced in naira — Starter, Professional and Business — billed monthly, or prepaid quarterly, six-monthly or annually at a discount. See the pricing page for what each plan includes.",
   },
   {
     topic: "Plans",
     question: "What happens if we use all our AI requests?",
     answer:
-      "You'll see a warning at 80% of your monthly allowance. At 100%, AI features pause until the next month unless you choose a clearly priced add-on. There are no surprise fees, and manual workflows keep working.",
-  },
-  {
-    topic: "Privacy",
-    question: "What happens to the details I enter on this site?",
-    answer:
-      "Nothing is stored. Forms on this prototype check your entries and show a confirmation, but no details are sent anywhere. The demo never uses real customer records.",
-  },
-  {
-    topic: "Privacy",
-    question: "Will GlowHub train AI on my business data?",
-    answer:
-      "No. The plan is not to train AI models on private customer content without separate, documented authorisation and a lawful basis.",
+      "You'll see a warning at 80% of your monthly allowance. At 100%, AI features pause until the next month unless you choose a clearly priced add-on. There are no surprise fees, and everything else keeps working.",
   },
 ];

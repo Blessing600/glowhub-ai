@@ -1,21 +1,23 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { alerts } from "./support/alerts";
 import { expectImagesLoaded } from "./support/images";
 
 const routes = [
   "/",
-  "/for-businesses",
-  "/for-shoppers",
   "/features",
+  "/for-businesses",
+  "/glow-scan",
   "/how-it-works",
   "/pricing",
-  "/demo",
   "/about",
   "/faq",
   "/contact",
-  "/early-access",
   "/sign-in",
   "/register",
+  "/privacy",
+  "/terms",
+  "/security",
 ];
 const widths = [360, 390, 768, 1024, 1440];
 
@@ -78,7 +80,7 @@ test.describe("public site", () => {
     await nav.getByRole("link", { name: "Pricing" }).click();
     await expect(page).toHaveURL(/\/pricing$/);
     await expect(nav).toBeHidden();
-    await expect(page.getByRole("heading", { level: 1, name: "Simple plans in naira." })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Plans in naira, built to grow with you." })).toBeVisible();
   });
 
   test("cookie preferences explain that no optional cookies are used", async ({ page }) => {
@@ -91,63 +93,53 @@ test.describe("public site", () => {
   });
 });
 
-test.describe("interactive demo", () => {
+test.describe("homepage", () => {
   test.use({ reducedMotion: "reduce" });
 
-  test("business restock answer shows calculations and a simulated action", async ({ page }) => {
-    await page.goto("/demo");
-    const demo = page.getByRole("region", { name: "GlowHub interactive demo" });
-    await expect(demo.getByText("Interactive demo • fictional data")).toBeVisible();
-    await demo.getByRole("button", { name: /Restock and sales/ }).click();
-    await expect(demo.getByText("Order 24")).toBeVisible();
-    await expect(demo.getByText("Order 18")).toBeVisible();
-    await expect(demo.getByText("Order 12")).toBeVisible();
-    await expect(demo.getByText(/Expiry risk/)).toBeVisible();
-    await demo.getByRole("button", { name: /Create draft purchase list/ }).click();
-    await expect(demo.getByRole("status")).toContainText("Nothing was ordered");
-  });
-
-  test("invoice check needs human review and makes no authenticity claim", async ({ page }) => {
-    await page.goto("/demo");
-    const demo = page.getByRole("region", { name: "GlowHub interactive demo" });
-    await demo.getByRole("button", { name: /Check an invoice/ }).click();
-    await expect(demo.getByText("Status: Needs human review")).toBeVisible();
-    await expect(demo.getByText("Mismatch", { exact: true })).toBeVisible();
-    await expect(demo.getByText(/does not decide whether a product is genuine/)).toBeVisible();
-  });
-
-  test("shopper consultation stays within budget with a safety referral", async ({ page }) => {
-    await page.goto("/demo");
-    const demo = page.getByRole("region", { name: "GlowHub interactive demo" });
-    await demo.getByRole("tab", { name: "For shoppers" }).click();
-    await demo.getByRole("button", { name: /Routine on a budget/ }).click();
-    await expect(demo.getByText(/₦2,000 remaining/)).toBeVisible();
-    await expect(demo.getByText("₦28,000")).toBeVisible();
-    await expect(demo.getByText(/qualified healthcare professional/)).toBeVisible();
-  });
-
-  test("Explore Glow Scan opens the labelled fictional sample", async ({ page }) => {
+  test("hero offers one action for shoppers and one for businesses", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("banner").getByRole("link", { name: "Explore Glow Scan" }).click();
-    await expect(page).toHaveURL(/\/demo#glow-scan$/);
-    const demo = page.getByRole("region", { name: "GlowHub interactive demo" });
-    await expect(demo.getByText(/Fictional sample image with scripted observations/)).toBeVisible();
-    await expect(demo.getByText("Sample observations (scripted)")).toBeVisible();
-    await demo.getByRole("button", { name: /text-only consultation/ }).click();
-    await expect(demo.getByText(/₦2,000 remaining/)).toBeVisible();
+    const hero = page.getByRole("region", { name: "Beauty, beautifully understood." });
+    await hero.getByRole("link", { name: "Explore Glow Scan" }).click();
+    await expect(page).toHaveURL(/\/glow-scan$/);
+    await page.goto("/");
+    await hero.getByRole("link", { name: "For beauty businesses" }).click();
+    await expect(page).toHaveURL(/\/for-businesses$/);
   });
 
-  test("demo tabs support arrow keys, and reset clears the answer", async ({ page, isMobile }) => {
+  test("the match vignette is a labelled run of the sample catalogue", async ({ page }) => {
+    await page.goto("/");
+    const match = page.getByRole("region", { name: /Chosen for your needs/ });
+    await expect(match.getByText("Gentle Gel Cleanser")).toBeVisible();
+    await expect(match.getByText(/sample catalogue: illustrative products, not for sale/i)).toBeVisible();
+  });
+
+  test("workspace module tabs switch with arrow keys and show empty states", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard checked on desktop");
-    await page.goto("/demo");
-    const demo = page.getByRole("region", { name: "GlowHub interactive demo" });
-    await demo.getByRole("tab", { name: "For businesses" }).focus();
+    await page.goto("/features");
+    const tabs = page.getByRole("tablist", { name: "Workspace modules" });
+    await tabs.getByRole("tab", { name: "Inventory" }).focus();
     await page.keyboard.press("ArrowRight");
-    await expect(demo.getByRole("tab", { name: "For shoppers" })).toBeFocused();
-    await expect(demo.getByRole("tab", { name: "For shoppers" })).toHaveAttribute("aria-selected", "true");
-    await demo.getByRole("button", { name: /Routine on a budget/ }).click();
-    await demo.getByRole("button", { name: "Reset" }).click();
-    await expect(demo.getByText(/₦2,000 remaining/)).toHaveCount(0);
+    await expect(tabs.getByRole("tab", { name: "Products" })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByText("Your catalogue is empty.")).toBeVisible();
+  });
+
+  test("public pages show no waitlist, demo or pre-launch messaging", async ({ page }) => {
+    for (const route of routes) {
+      await page.goto(route);
+      const text = await page.locator("body").innerText();
+      expect(text, route).not.toMatch(/early access|waitlist|coming soon|launching soon|try (the )?demo|demo mode|sample data|pre-launch|prototype|fictional|proposed|atelier/i);
+    }
+  });
+
+  test("retired routes redirect", async ({ page }) => {
+    for (const [from, to] of [
+      ["/demo", "/how-it-works"],
+      ["/early-access", "/register"],
+      ["/for-shoppers", "/glow-scan"],
+    ]) {
+      await page.goto(from);
+      await expect(page).toHaveURL(new RegExp(`${to}$`));
+    }
   });
 });
 
@@ -161,33 +153,31 @@ test.describe("pricing and forms", () => {
     await expect(professional).toContainText("₦20,000 a month equivalent");
   });
 
-  test("early access validates, then confirms nothing was stored", async ({ page }) => {
-    await page.goto("/early-access");
-    await page.getByRole("button", { name: "Request early access" }).click();
-    await expect(page.getByText("Enter your name")).toBeVisible();
-    await expect(page.getByLabel("Your name")).toBeFocused();
-    await expect(page.getByLabel("Your name")).toHaveAttribute("aria-invalid", "true");
-
-    await page.getByLabel("Your name").fill("Ada");
-    await page.getByLabel("Email").fill("ada@example.com");
-    await page.getByLabel("What best describes you?").selectOption("retailer");
-    await expect(page.getByLabel(/occasional GlowHub news/)).not.toBeChecked();
-    await page.getByRole("button", { name: "Request early access" }).click();
-    await expect(page.getByRole("heading", { name: "Thank you, Ada." })).toBeFocused();
-    await expect(page.getByText(/not sent or stored/)).toBeVisible();
-  });
-
   test("registration requires terms and privacy acknowledgement", async ({ page }) => {
     await page.goto("/register");
     await page.getByLabel("Your name").fill("Ada");
     await page.getByLabel("Work email").fill("ada@example.com");
     await page.getByLabel("Business name").fill("Ada Beauty");
     await page.getByLabel("Password").fill("a-long-passphrase");
-    await page.getByRole("button", { name: "Start 14-day trial" }).click();
+    await page.getByRole("button", { name: "Create workspace" }).click();
     await expect(page.getByText("Confirm you accept the terms to continue")).toBeVisible();
     await page.getByLabel(/I accept the Terms/).check();
     await page.getByLabel(/I have read the Privacy Notice/).check();
-    await page.getByRole("button", { name: "Start 14-day trial" }).click();
-    await expect(page.getByText(/no account or workspace was\s+created/)).toBeVisible();
+    await page.getByRole("button", { name: "Create workspace" }).click();
+    // No backend is configured: the form must say so, never claim success.
+    await expect(alerts(page)).toContainText("Account creation isn't connected yet");
+    await expect(page.getByText("No account was created")).toBeVisible();
+    await expect(page.getByLabel("Your name")).toHaveValue("Ada");
+  });
+
+  test("contact form reports that messaging is not connected", async ({ page }) => {
+    await page.goto("/contact");
+    await page.getByLabel("Your name").fill("Ada");
+    await page.getByLabel("Email").fill("ada@example.com");
+    await page.getByLabel("Topic").selectOption("general");
+    await page.getByLabel("Message").fill("How do I import my products?");
+    await page.getByRole("button", { name: "Send message" }).click();
+    await expect(alerts(page)).toContainText("Online messaging isn't connected yet");
+    await expect(page.getByText("Message sent")).toHaveCount(0);
   });
 });

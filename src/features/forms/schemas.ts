@@ -2,32 +2,13 @@ import { z } from "zod";
 
 const name = z.string().trim().min(2, "Enter your name").max(80, "Use 80 characters or fewer");
 const email = z.email("Enter a valid email address, like name@example.com");
-const optionalText = (max: number) => z.string().trim().max(max, `Use ${max} characters or fewer`);
 /** Optional marketing consent: separate from the request and off by default. */
 const marketingConsent = z.boolean();
 
-export const earlyAccessRoles = [
-  { value: "retailer", label: "Skincare retailer" },
-  { value: "brand", label: "Beauty brand owner" },
-  { value: "distributor", label: "Beauty distributor" },
-  { value: "professional", label: "Salon, spa or beauty professional" },
-  { value: "shopper", label: "Shopper" },
-  { value: "other", label: "Something else" },
-] as const;
-
-export const earlyAccessSchema = z.object({
-  name,
-  email,
-  role: z.enum(earlyAccessRoles.map((r) => r.value), { error: "Choose what best describes you" }),
-  businessName: optionalText(120),
-  city: optionalText(80),
-  marketingConsent,
-});
-export type EarlyAccessValues = z.infer<typeof earlyAccessSchema>;
-
 export const contactTopics = [
   { value: "general", label: "General question" },
-  { value: "pilot", label: "Pilot programme" },
+  { value: "account", label: "Account or billing" },
+  { value: "glow-scan", label: "Glow Scan" },
   { value: "privacy", label: "Privacy" },
   { value: "other", label: "Something else" },
 ] as const;

@@ -1,626 +1,393 @@
-import {
-  ArrowRight,
-  BadgeCheck,
-  Camera,
-  HandHeart,
-  PackageX,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-  UserCheck,
-  Wallet,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, Boxes, LineChart, Users } from "lucide-react";
+import type { Metadata } from "next";
+import { getImageProps } from "next/image";
 import Link from "next/link";
 
-import { FaqList } from "@/components/marketing/faq-list";
 import { PhotoPlaceholder } from "@/components/marketing/photo-placeholder";
-import { Container, CtaBand, Eyebrow, IconGrid, sectionHeadingClass } from "@/components/marketing/section";
-import { Button } from "@/components/ui/button";
-import { glowScanCta } from "@/config/site";
 import {
-  consultationBudget,
-  consultationProducts,
-  consultationSummary,
-  extractedFields,
-  glowScanIllustrativeIndicators,
-  invoice,
-  restockRows,
-  routine,
-  stockAsOf,
-} from "@/features/demo/scenarios";
-import { faqs, type IconItem } from "@/features/marketing/content";
-import { ExploreGrid, type ExploreCard } from "@/features/marketing/explore-grid";
-import { ProductCarousel, type MatchCard } from "@/features/marketing/product-carousel";
-import { PricingPlans } from "@/features/pricing/pricing-plans";
-import { formatMoney, naira } from "@/lib/money";
+  Container,
+  CtaBand,
+  displayHeadingClass,
+  Eyebrow,
+} from "@/components/marketing/section";
+import { Button } from "@/components/ui/button";
+import { billingCycles, plans } from "@/config/pricing";
+import { categoryOptions, labelFor } from "@/features/glow-scan/options";
+import { recommendFromSample } from "@/features/glow-scan/sample-catalogue";
+import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
-const glowScanHref = glowScanCta.href;
-const budgetLabel = formatMoney(consultationBudget);
-const restock = restockRows[0];
-const flaggedFields = extractedFields.filter((f) => f.check !== "match").length;
-
-const promises = [
-  { icon: Wallet, label: "Prices in naira" },
-  { icon: PackageX, label: "Matches only from stock on the shelf" },
-  { icon: Camera, label: "Your photo is never analysed" },
-  { icon: UserCheck, label: "People approve every AI action" },
-];
-
-const kinds = { Cleanse: "cleanser", Moisturise: "jar", Protect: "sunscreen" } as const;
-
-const matches: readonly MatchCard[] = [
-  ...consultationProducts.map((p) => ({
-    kind: kinds[p.step as keyof typeof kinds],
-    step: p.step,
-    product: p.product,
-    priceLabel: formatMoney(p.price),
-    keyIngredients: p.keyIngredients,
-    reason: p.reason,
-    inStock: p.inStock,
-  })),
-  {
-    kind: "toner",
-    step: "Tone",
-    product: "Hydrating Toner 200 ml",
-    priceLabel: formatMoney(naira(7_000)),
-    keyIngredients: "Glycerin, sodium hyaluronate",
-    reason: "A watery layer after cleansing for skin that feels tight; label lists no added fragrance.",
-    inStock: 9,
-  },
-  {
-    kind: "serum",
-    step: "Treat",
-    product: "Vitamin C Serum 30 ml",
-    priceLabel: formatMoney(naira(12_500)),
-    keyIngredients: "Ascorbic acid, vitamin E",
-    reason: "For a more even-looking tone. Patch test first if your skin stings easily.",
-    inStock: restock.available,
-  },
-];
-
-const routineNotes: Record<string, string> = {
-  "Gentle Cleanser": "Massage onto damp skin, rinse.",
-  "Barrier Moisturiser": "A pea-sized amount on damp skin.",
-  "SPF 50 Sunscreen": "Two finger-lengths, last step.",
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
 };
 
-const safeguards: readonly IconItem[] = [
-  {
-    icon: Camera,
-    title: "No photo analysis",
-    body: "Glow Scan's camera is a private preview. Matches come from your answers, never from your face.",
-  },
-  {
-    icon: Stethoscope,
-    title: "Cosmetic guidance only",
-    body: "No diagnosis or prescriptions. Symptoms like pain, bleeding or a spreading rash stop suggestions and point to qualified care.",
-  },
-  {
-    icon: PackageX,
-    title: "Only sellable stock",
-    body: "Expired, recalled and quarantined batches never appear in matches or sales.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Evidence, not verdicts",
-    body: "Supplier documents are checked field by field, and a person makes the decision. A barcode alone proves nothing.",
-  },
-  {
-    icon: HandHeart,
-    title: "People stay in charge",
-    body: "AI suggests. Stock changes, purchase lists, prices and messages wait for someone to confirm.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Your data, your choice",
-    body: "Skin details are optional and need your consent. No skin-tone scores, age guesses or lightening goals — ever.",
-  },
-];
+const textLink =
+  "inline-flex min-h-11 items-center gap-1.5 font-semibold text-plum underline decoration-rose underline-offset-[6px] hover:decoration-2";
 
-const exploreCards: readonly ExploreCard[] = [
-  {
-    href: glowScanHref,
-    title: "Glow Scan",
-    body: "A short consultation that turns your answers into in-stock matches.",
-    image: "/images/skin-scan/selfie-phone.webp",
-    audience: "shoppers",
-  },
-  {
-    href: "/for-shoppers",
-    title: "Skincare that fits you",
-    body: "Clear reasons, ingredients and prices for every product — within your budget.",
-    image: "/images/beauty-editorial/hands-cream.webp",
-    audience: "shoppers",
-  },
-  {
-    href: "/faq",
-    title: "Questions, answered",
-    body: "What Glow Scan does with your photo, how matches work, and what GlowHub will never do.",
-    image: "/images/beauty-editorial/morning-cream.webp",
-    audience: "shoppers",
-  },
-  {
-    href: "/for-businesses",
-    title: "Run your beauty business",
-    body: "Stock, expiry, sales, customers and supplier evidence in one place.",
-    image: "/images/beauty-businesses/shop-owner.webp",
-    audience: "businesses",
-  },
-  {
-    href: "/features",
-    title: "Every feature",
-    body: "What each tool does, and how much of it works today.",
-    image: "/images/consultation/phone-cosmetics.webp",
-    audience: "businesses",
-  },
-  {
-    href: "/how-it-works",
-    title: "From set-up to first insight",
-    body: "A starter catalogue, a first sale and a first stock suggestion in one sitting.",
-    image: "/images/consultation/mirror-phone.webp",
-    audience: "businesses",
-  },
-];
+const fromPrice = formatMoney(plans[0].monthlyPrice);
+const maxSaving = Math.max(...billingCycles.map((c) => c.discountBps)) / 100;
 
-/** Floating UI card laid over photography. */
-function FloatCard({ className, children }: { className?: string; children: React.ReactNode }) {
+/** A real run of the Glow Scan matcher on the sample catalogue, for one example set of answers. */
+const exampleAnswers = { skinFeel: "dry", goal: "Hydration" } as const;
+const example = recommendFromSample({
+  skinFeel: exampleAnswers.skinFeel,
+  goals: ["hydration"],
+  currentProducts: [],
+  sensitivities: ["fragrance"],
+  otherExclusions: [],
+  categories: ["cleanser", "moisturiser", "sunscreen"],
+});
+const examplePicks = example.routine
+  .filter((s) => s.time === "morning")
+  .map((s) => ({
+    step: s,
+    product: example.matches.find((m) => m.id === s.productId)!,
+  }));
+
+/** Art-directed hero: a wide stone composition on desktop, the original portrait crop on phones. */
+function HeroImage() {
+  const common = { alt: "", priority: true, quality: 75 } as const;
+  const { props: wide } = getImageProps({
+    ...common,
+    src: "/images/hero/hero-stone-wide.webp",
+    width: 2880,
+    height: 1600,
+    sizes: "100vw",
+  });
+  const { props: tall } = getImageProps({
+    ...common,
+    src: "/images/hero/hero-stone-tall.webp",
+    width: 1400,
+    height: 1865,
+    sizes: "100vw",
+  });
   return (
-    <div
-      className={cn(
-        "rounded-xl border border-plum/10 bg-white p-4 text-plum shadow-[0_12px_32px_-16px_rgb(52_32_56/0.35)] sm:p-5",
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <picture>
+      <source
+        media="(min-width: 768px)"
+        srcSet={wide.srcSet}
+        sizes={wide.sizes}
+      />
+      <source srcSet={tall.srcSet} sizes={tall.sizes} />
+      {/* eslint-disable-next-line jsx-a11y/alt-text -- alt="" comes from getImageProps (decorative) */}
+      <img
+        {...tall}
+        className="absolute inset-0 size-full object-cover object-[50%_70%] md:object-center"
+      />
+    </picture>
   );
 }
 
-function CardLabel({ children, tone = "rose" }: { children: React.ReactNode; tone?: "rose" | "terracotta" }) {
-  return (
-    <p
-      className={cn(
-        "text-xs font-semibold tracking-[0.2em] uppercase",
-        tone === "rose" ? "text-rose-700" : "text-terracotta-700",
-      )}
-    >
-      {children}
-    </p>
-  );
-}
-
-function MatchList() {
-  return (
-    <>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <CardLabel>Your product match</CardLabel>
-          <p className="mt-1 text-sm text-plum-600">Dry, sensitive skin · up to {budgetLabel}</p>
-        </div>
-      </div>
-      <ol className="mt-3 divide-y divide-plum/10">
-        {consultationProducts.map((p) => (
-          <li key={p.product} className="flex items-baseline justify-between gap-3 py-2 text-sm">
-            <span>
-              <span className="block text-xs text-plum-600 sm:mr-2 sm:inline sm:text-sm">{p.step}</span>
-              <span className="font-semibold">{p.product}</span>
-            </span>
-            <span className="shrink-0">{formatMoney(p.price)}</span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-2 flex items-baseline justify-between border-t border-plum/15 pt-3 text-sm">
-        <span className="font-semibold">Total {formatMoney(consultationSummary.total)}</span>
-        <span className="text-sage-700">{formatMoney(consultationSummary.remaining)} under budget</span>
-      </p>
-    </>
-  );
-}
-
-type Row = {
-  id: string;
-  label: string;
-  title: string;
-  body: string;
-  points: readonly string[];
-  link: { href: string; label: string };
-  image: string;
-  imageAlt: string;
-  overlay: React.ReactNode;
-};
-
-const rows: readonly Row[] = [
+const businessFeatures = [
   {
-    id: "glow-scan",
-    label: "Glow Scan",
-    title: "A consultation in your own words.",
-    body: "Tell us your goals, how your skin feels, any allergies and your budget. Add a photo if you like — it stays a private camera preview.",
-    points: ["Every question is optional", "No account needed to start", "Your photo is never uploaded or analysed"],
-    link: { href: glowScanHref, label: "Explore Glow Scan" },
-    image: "/images/skin-scan/selfie-phone.webp",
-    imageAlt: "A woman takes a smiling selfie on her phone.",
-    overlay: (
-      <FloatCard className="absolute right-4 bottom-4 left-4 sm:right-auto sm:w-80">
-        <CardLabel>Your answers</CardLabel>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {["Comfortable, less tight skin", "Stings with some products", `Up to ${budgetLabel}`].map((a) => (
-            <li key={a} className="rounded-full bg-blush px-3 py-1.5 text-xs font-semibold text-rose-800">
-              {a}
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-xs text-plum-600">Camera preview only. Your photo is not analysed.</p>
-      </FloatCard>
-    ),
+    icon: Boxes,
+    title: "Stock by batch and expiry",
+    snippet: ["Product", "Batch", "Expires", "On hand"],
   },
   {
-    id: "matches",
-    label: "Product matches",
-    title: "Matches you can buy today.",
-    body: "GlowHub checks a shop's real stock and ingredient records, then explains every suggestion: why it suits you, what is in it and what it costs.",
-    points: ["Stays within your budget", "Respects the allergies you list", "Skips expired or recalled batches"],
-    link: { href: "/for-shoppers", label: "How matching works" },
-    image: "/images/skincare-products/bottles-marble.webp",
-    imageAlt: "Unbranded skincare bottles and a jar on a marble surface.",
-    overlay: (
-      <FloatCard className="absolute right-4 bottom-4 left-4 sm:left-auto sm:w-[23rem]">
-        <MatchList />
-      </FloatCard>
-    ),
+    icon: Users,
+    title: "Customers and consultations",
+    snippet: ["Customer", "Skin notes", "Last visit"],
   },
   {
-    id: "routine",
-    label: "Routines",
-    title: "Morning to evening, beautifully simple.",
-    body: "Your matches become a routine you can edit and save — in the order to apply them, with a note on how.",
-    points: ["Morning and evening steps", "Swap any product for another in stock", "Cautions such as patch testing"],
-    link: { href: glowScanHref, label: "Build your routine" },
-    image: "/images/beauty-editorial/morning-cream.webp",
-    imageAlt: "A woman in a bathrobe applies cream to her cheek in the morning.",
-    overlay: (
-      <FloatCard className="absolute right-4 bottom-4 left-4 grid grid-cols-2 gap-4 sm:right-auto sm:w-[26rem]">
-        {(
-          [
-            ["Morning", routine.morning],
-            ["Evening", routine.evening],
-          ] as const
-        ).map(([time, steps]) => (
-          <div key={time}>
-            <p className="font-display text-xl italic">{time}</p>
-            <ol className="mt-2 space-y-2">
-              {steps.map((step, i) => (
-                <li key={step} className="text-sm">
-                  <span className="font-semibold">
-                    {i + 1}. {step}
-                  </span>
-                  <span className="hidden text-xs text-plum-600 sm:block">{routineNotes[step]}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        ))}
-      </FloatCard>
-    ),
-  },
-  {
-    id: "business",
-    label: "For beauty businesses",
-    title: "Run the shop. GlowHub keeps count.",
-    body: "Stock and expiry, sales, customers and supplier evidence in one calm place — with AI that shows its working and waits for your yes.",
-    points: ["Reorder suggestions you approve", "Expiry warnings before it's too late", "Supplier evidence checked by people"],
-    link: { href: "/for-businesses", label: "For Beauty Businesses" },
-    image: "/images/beauty-businesses/shop-owner.webp",
-    imageAlt: "A smiling woman stands beside shelves of skincare in a beauty shop.",
-    overlay: (
-      <div className="absolute right-4 bottom-4 left-4 grid gap-3 sm:left-auto sm:w-80">
-        <FloatCard>
-          <CardLabel tone="terracotta">Restock</CardLabel>
-          <p className="mt-1.5 font-semibold">{restock.product}</p>
-          <p className="mt-0.5 text-sm text-plum-600">
-            {restock.available} left · suggest ordering {restock.reorder}. Nothing is ordered until you approve.
-          </p>
-        </FloatCard>
-        <FloatCard>
-          <CardLabel>Supplier evidence</CardLabel>
-          <p className="mt-1.5 font-semibold">Invoice {invoice.number}</p>
-          <p className="mt-0.5 text-sm text-plum-600">{flaggedFields} fields flagged · needs human review</p>
-        </FloatCard>
-      </div>
-    ),
+    icon: LineChart,
+    title: "Insights that show their working",
+    snippet: ["Question", "Records used", "Your call"],
   },
 ];
 
 export default function Home() {
   return (
     <>
-      {/* Hero: AI-first positioning left; portrait with Glow Scan overlay, illustrative results and an AI routine right. */}
-      <section aria-labelledby="hero-heading" className="overflow-hidden bg-cream">
-        <Container className="grid items-center gap-10 pt-8 pb-16 lg:grid-cols-12 lg:gap-0 lg:pt-10 lg:pb-20">
-          <div className="lg:col-span-6 lg:pr-14">
-            <Link
-              href={glowScanHref}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-plum/15 bg-white py-1.5 pr-4 pl-1.5 text-sm font-medium hover:border-plum/40"
-            >
-              <span className="rounded-full bg-rose-700 px-2.5 py-1 text-xs font-semibold text-cream">New</span>
-              Glow Scan consultations
-              <ArrowRight aria-hidden className="size-4 text-rose-700" />
-            </Link>
-            <h1
-              id="hero-heading"
-              className="mt-6 font-display text-[2.5rem] leading-[1.05] font-medium tracking-[-0.01em] sm:text-[3.5rem] lg:text-[4rem]"
-            >
-              Meet the AI agent running the future of <em className="text-bronze">beauty commerce.</em>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed">
-              GlowHub AI helps beauty brands, retailers and skincare professionals automate customer consultations,
-              personalise product recommendations, run AI-powered beauty scans, manage inventory and grow sales through
-              one intelligent platform.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href={glowScanHref}>Explore Glow Scan</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/for-businesses">For Beauty Businesses</Link>
-              </Button>
-            </div>
-            <div className="mt-10 border-t border-plum/15 pt-5">
-              <p className="text-xs font-semibold tracking-[0.2em] text-plum-600 uppercase">Built for</p>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {["Beauty brands", "Retailers", "Skincare professionals", "Salons and spas"].map((who) => (
-                  <li key={who} className="rounded-full border border-plum/15 bg-white px-3.5 py-1.5 text-sm">
-                    {who}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+      {/* 1 · Hero: stone still life, one oversized word, two audiences. */}
+      <section aria-labelledby="hero-heading" className="bg-ivory">
+        <Container className="pt-2 pb-16 sm:pt-4 lg:pb-24">
+          <div className="relative">
+            <div className="overflow-hidden rounded-lg bg-[#ded6c9]">
+              <div className="relative aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/10] lg:aspect-auto lg:h-[min(calc(100svh-6rem),56rem)] lg:min-h-[38rem]">
+                <HeroImage />
+                <p
+                  aria-hidden
+                  className="absolute inset-x-0 top-[5%] text-center font-display text-[15.5vw] leading-none font-normal tracking-[0.02em] text-ink md:top-[4%] md:text-[11.5vw] xl:text-[10.5rem]"
+                >
+                  RADIANCE
+                </p>
+                <p className="absolute top-[24%] left-10 hidden text-xs font-semibold tracking-[0.24em] text-ink uppercase md:block">
+                  Skincare intelligence
+                </p>
+                <p className="absolute top-[24%] right-10 hidden text-xs font-semibold tracking-[0.24em] text-ink uppercase md:block">
+                  © 2026 GlowHub AI
+                </p>
 
-          <div className="lg:col-span-6">
-            <div className="relative">
-              <PhotoPlaceholder
-                shot="Hero portrait"
-                folder="hero"
-                src="/images/hero/portrait-studio.webp"
-                alt="Studio beauty portrait of a woman with deep brown skin resting her chin on her hand."
-                priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="aspect-[4/5] lg:aspect-[5/6] lg:max-h-[calc(100svh-7rem)] lg:w-full [&_img]:object-[center_25%]"
-              />
-              {/* Decorative scan frame; no analysis is performed on this photo. */}
-              <div aria-hidden className="pointer-events-none absolute inset-x-[8%] top-[11%] bottom-[10%]">
-                <span className="absolute top-0 left-0 size-7 rounded-tl-lg border-t-2 border-l-2 border-cream" />
-                <span className="absolute top-0 right-0 size-7 rounded-tr-lg border-t-2 border-r-2 border-cream" />
-                <span className="absolute bottom-0 left-0 size-7 rounded-bl-lg border-b-2 border-l-2 border-cream" />
-                <span className="absolute right-0 bottom-0 size-7 rounded-br-lg border-r-2 border-b-2 border-cream" />
-                <span className="animate-glow-scan absolute inset-x-2 h-0.5 rounded-full bg-cream/90 shadow-[0_0_14px_3px_rgb(255_247_239/0.7)]" />
+                <a
+                  href="#glow-scan"
+                  className="absolute right-10 bottom-10 hidden min-h-11 items-center gap-2 text-sm font-semibold tracking-[0.2em] text-ink uppercase lg:inline-flex"
+                >
+                  Scroll <ArrowDown aria-hidden className="size-4" />
+                </a>
               </div>
-              <span className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-plum/85 px-3 py-1.5 text-xs font-semibold text-cream">
-                <Sparkles aria-hidden className="size-3.5" />
-                Glow Scan
-              </span>
-
-              <FloatCard className="relative mx-3 -mt-20 sm:absolute sm:top-20 sm:right-3 sm:mx-0 sm:mt-0 sm:w-48 sm:p-2.5">
-                <div className="flex items-center justify-between gap-2">
-                  <CardLabel>Beauty scan</CardLabel>
-                  <span className="rounded-full bg-blush px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-rose-800">
-                    Result
-                  </span>
-                </div>
-                <ul className="mt-3 space-y-2.5 sm:mt-2 sm:space-y-1.5">
-                  {glowScanIllustrativeIndicators.map((ind) => (
-                    <li key={ind.label}>
-                      <p className="flex items-baseline justify-between gap-2 text-sm sm:text-[11px]">
-                        <span className="font-semibold whitespace-nowrap">{ind.label}</span>
-                        <span className="text-xs whitespace-nowrap text-plum-600 sm:text-[10px]">{ind.note}</span>
-                      </p>
-                      <div aria-hidden className="mt-1 h-1.5 rounded-full bg-blush sm:mt-0.5 sm:h-1">
-                        <div className="h-full rounded-full bg-bronze-700" style={{ width: `${ind.value}%` }} />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </FloatCard>
-
-              <FloatCard className="relative mx-3 mt-3 sm:absolute sm:-bottom-10 sm:left-3 sm:mx-0 sm:mt-0 sm:w-56 sm:p-2.5 lg:-left-12">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <CardLabel tone="terracotta">AI recommendation</CardLabel>
-                    <p className="mt-1 font-semibold sm:text-xs sm:leading-snug">Recommended routine for dry, sensitive skin</p>
-                  </div>
-                  <Sparkles aria-hidden className="mt-0.5 size-5 shrink-0 text-rose sm:size-4" />
-                </div>
-                <ol className="mt-3 divide-y divide-plum/10 sm:mt-1.5">
-                  {consultationProducts.map((p) => (
-                    <li
-                      key={p.product}
-                      className="flex items-baseline justify-between gap-3 py-2 text-sm sm:py-0.5 sm:text-[11px]"
-                    >
-                      <span>
-                        <span className="block text-xs text-plum-600 sm:hidden">{p.step}</span>
-                        <span className="font-semibold">{p.product}</span>
-                      </span>
-                      <span className="shrink-0">{formatMoney(p.price)}</span>
-                    </li>
-                  ))}
-                </ol>
-                <p className="mt-2 flex items-baseline justify-between border-t border-plum/15 pt-3 text-sm sm:mt-1 sm:pt-1.5 sm:text-[11px]">
-                  <span className="font-semibold">Total {formatMoney(consultationSummary.total)}</span>
-                  <span className="text-sage-700">Within {budgetLabel}</span>
-                </p>
-                <p className="mt-2 text-xs text-plum-600 sm:mt-1 sm:text-[10px]">
-                  Matched from consultation inputs
-                </p>
-              </FloatCard>
             </div>
-            <p className="mt-4 text-xs leading-relaxed text-plum-600 sm:mt-3 sm:pl-[15.5rem] lg:pl-[11.5rem]">
-              Glow Scan provides skincare insights and product recommendations. It is not a medical diagnosis. Results
-              shown are illustrative, not an analysis of this photo.
-            </p>
+            {/* Below the picture on phones and tablets; on the stone, bottom left, on desktop. */}
+            <div className="mt-10 lg:absolute lg:bottom-10 lg:left-10 lg:mt-0 lg:max-w-sm">
+              <HeroCopy />
+            </div>
           </div>
         </Container>
       </section>
 
-      {/* Promise strip. */}
-      <section aria-label="Our promises" className="border-y border-plum/10 bg-white">
+      {/* 2 · Glow Scan: photo-led, one line. */}
+      <section
+        id="glow-scan"
+        aria-labelledby="glow-scan-heading"
+        className="scroll-mt-16 bg-ivory pb-24 sm:pb-32 lg:pb-40"
+      >
+        <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-20">
+          <figure className="lg:col-span-6">
+            <PhotoPlaceholder
+              shot="Glow Scan: close beauty portrait, cream on fingertips."
+              folder="beauty-editorial"
+              src="/images/beauty-editorial/cream-application.webp"
+              alt="Close-up of a woman with deep brown skin touching cream to her cheekbone."
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              position="50% 35%"
+              className="aspect-[4/5] md:aspect-[5/4] lg:aspect-[4/5]"
+            />
+            <figcaption className="mt-3 text-xs text-taupe">
+              Model photograph. Not a Glow Scan user or result.
+            </figcaption>
+          </figure>
+          <div className="lg:col-span-5 lg:col-start-8">
+            <Eyebrow>Glow Scan</Eyebrow>
+            <h2
+              id="glow-scan-heading"
+              className={cn("mt-5", displayHeadingClass)}
+            >
+              Meet your <em>skin.</em>
+            </h2>
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-taupe">
+              A little guidance. A better routine.
+            </p>
+            <Button asChild size="lg" className="mt-10">
+              <Link href="/glow-scan#start">Find my routine</Link>
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* 3 · Product match: a real run of the matcher on the sample catalogue. */}
+      <section
+        aria-labelledby="match-heading"
+        className="bg-sand py-24 sm:py-32 lg:py-40"
+      >
+        <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-20">
+          <div className="lg:col-span-5">
+            <Eyebrow>Find your match</Eyebrow>
+            <h2 id="match-heading" className={cn("mt-5", displayHeadingClass)}>
+              Chosen for your needs, budget and <em>preferences.</em>
+            </h2>
+            <PhotoPlaceholder
+              shot="Unbranded amber skincare bottles in soft light."
+              folder="skincare-products"
+              src="/images/skincare-products/amber-bottles.webp"
+              alt=""
+              sizes="(min-width: 1024px) 35vw, 100vw"
+              position="45% 55%"
+              className="mt-10 hidden aspect-[3/2] lg:block"
+            />
+          </div>
+          <figure className="rounded-lg bg-white p-6 sm:p-10 lg:col-span-7">
+            <figcaption className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-4">
+              <span className="font-display text-2xl text-plum italic">
+                Morning routine
+              </span>
+              <span className="text-xs text-taupe">
+                Example answers: skin feels {exampleAnswers.skinFeel} ·{" "}
+                {exampleAnswers.goal} · no fragrance
+              </span>
+            </figcaption>
+            <ol className="divide-y divide-line">
+              {examplePicks.map(({ step, product }, i) => (
+                <li
+                  key={step.id}
+                  className="grid grid-cols-[2rem_1fr_auto] items-baseline gap-x-3 py-5"
+                >
+                  <span
+                    aria-hidden
+                    className="font-display text-lg text-rose-700"
+                  >
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold tracking-[0.2em] text-taupe uppercase">
+                      {labelFor(categoryOptions, step.category)}
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-ink">
+                      {product.name}
+                    </p>
+                    <p className="mt-1 text-sm text-taupe">
+                      {product.reasons[product.reasons.length - 1]}
+                    </p>
+                  </div>
+                  <p className="font-semibold text-ink">
+                    {formatMoney(product.price)}
+                  </p>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-2 text-xs text-taupe">
+              From the Glow Scan sample catalogue: illustrative products, not
+              for sale.
+            </p>
+          </figure>
+        </Container>
+      </section>
+
+      {/* 4 · Founders: atmospheric editorial gallery. */}
+      <section
+        aria-labelledby="founders-heading"
+        className="bg-ivory py-24 sm:py-32 lg:py-40"
+      >
         <Container>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-4 py-6 text-sm font-medium lg:grid-cols-4">
-            {promises.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-3">
-                <Icon aria-hidden className="size-5 shrink-0 text-rose" />
-                {label}
+          <h2
+            id="founders-heading"
+            className={cn(displayHeadingClass, "max-w-2xl")}
+          >
+            Made for the beauty behind <em>the business.</em>
+          </h2>
+          <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-12">
+            <PhotoPlaceholder
+              shot="A beauty entrepreneur in her skincare boutique."
+              folder="beauty-businesses"
+              src="/images/beauty-businesses/shop-owner.webp"
+              alt="A smiling beauty entrepreneur gestures towards shelves of skincare in her boutique."
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              position="85% 35%"
+              className="col-span-2 aspect-[4/3] lg:col-span-6 lg:aspect-[5/6]"
+            />
+            <PhotoPlaceholder
+              shot="Editorial portrait: afro hair, gold jewellery, dark backdrop."
+              folder="beauty-editorial"
+              src="/images/beauty-editorial/portrait-gold.webp"
+              alt="Portrait of a woman with deep brown skin, natural hair and gold hoop earrings."
+              sizes="(min-width: 1024px) 25vw, 50vw"
+              position="50% 30%"
+              className="aspect-[3/4] lg:col-span-3 lg:mt-24"
+            />
+            <PhotoPlaceholder
+              shot="A beauty creator at her table of products."
+              folder="beauty-businesses"
+              src="/images/beauty-businesses/beauty-creator.webp"
+              alt="A smiling beauty creator sits at a table of cosmetics with a mirror."
+              sizes="(min-width: 1024px) 25vw, 50vw"
+              position="50% 30%"
+              className="aspect-[3/4] lg:col-span-3 lg:mt-48"
+            />
+          </div>
+        </Container>
+      </section>
+
+      {/* 5 · For businesses: three features, compact interface snippets. */}
+      <section
+        aria-labelledby="business-heading"
+        className="bg-plum py-24 text-ivory sm:py-32 lg:py-40"
+      >
+        <Container>
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-7">
+              <Eyebrow className="text-gold">For beauty businesses</Eyebrow>
+              <h2
+                id="business-heading"
+                className={cn("mt-5", displayHeadingClass, "text-ivory")}
+              >
+                Beauty businesses, <em>beautifully run.</em>
+              </h2>
+            </div>
+            <p className="text-lg text-ivory lg:col-span-4 lg:col-start-9">
+              Inventory, customers and insights in one place.
+            </p>
+          </div>
+          <ul className="mt-14 grid gap-6 md:grid-cols-3">
+            {businessFeatures.map(({ icon: Icon, title, snippet }) => (
+              <li key={title} className="rounded-lg border border-ivory/15 p-6">
+                <Icon aria-hidden className="size-5 text-gold" />
+                <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+                <div
+                  aria-hidden
+                  className="mt-6 rounded-md bg-ivory/[0.06] p-3"
+                >
+                  <div className="flex gap-3 border-b border-ivory/15 pb-2">
+                    {snippet.map((c) => (
+                      <span
+                        key={c}
+                        className="flex-1 truncate font-mono text-[10px] tracking-[0.12em] text-gold uppercase"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="h-1.5 w-10/12 rounded-full bg-ivory/15" />
+                    <div className="h-1.5 w-8/12 rounded-full bg-ivory/15" />
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
+          <Link
+            href="/for-businesses"
+            className="mt-10 inline-flex min-h-11 items-center gap-1.5 font-semibold text-ivory underline decoration-gold underline-offset-[6px] hover:decoration-2"
+          >
+            See what&apos;s included{" "}
+            <ArrowRight aria-hidden className="size-4" />
+          </Link>
         </Container>
       </section>
 
-      {/* Platform: alternating split rows, each a photo with live UI laid over it. */}
-      <section aria-labelledby="platform-heading" className="bg-white py-20 sm:py-28">
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <Eyebrow>One intelligent beauty platform</Eyebrow>
-            <h2 id="platform-heading" className={`mt-4 ${sectionHeadingClass}`}>
-              From your first question to the shop shelf.
-            </h2>
-          </div>
-          <div className="mt-16 space-y-20 sm:mt-20 sm:space-y-28">
-            {rows.map((row, i) => (
-              <article
-                key={row.id}
-                aria-labelledby={`row-${row.id}`}
-                className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16"
-              >
-                <div className={cn("relative lg:col-span-7", i % 2 === 1 && "lg:order-2")}>
-                  <PhotoPlaceholder
-                    shot={row.label}
-                    folder=""
-                    src={row.image}
-                    alt={row.imageAlt}
-                    sizes="(min-width: 1024px) 58vw, 100vw"
-                    className="aspect-[4/5] sm:aspect-[4/3]"
-                  />
-                  {row.overlay}
-                </div>
-                <div className="lg:col-span-5">
-                  <Eyebrow>{row.label}</Eyebrow>
-                  <h3
-                    id={`row-${row.id}`}
-                    className="mt-3 font-display text-[2rem] leading-[1.1] font-medium sm:text-[2.5rem]"
-                  >
-                    {row.title}
-                  </h3>
-                  <p className="mt-4 text-lg leading-relaxed">{row.body}</p>
-                  <ul className="mt-6 space-y-3">
-                    {row.points.map((point) => (
-                      <li key={point} className="flex gap-3">
-                        <Sparkles aria-hidden className="mt-1 size-4 shrink-0 text-rose" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={row.link.href}
-                    className="mt-8 inline-flex min-h-11 items-center gap-1.5 font-semibold text-rose-700 underline-offset-4 hover:underline"
-                  >
-                    {row.link.label}
-                    <ArrowRight aria-hidden className="size-4" />
-                  </Link>
-                  {row.id === "business" && (
-                    <p className="mt-2 text-sm text-plum-600">Fictional records as of {stockAsOf}</p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Product matches carousel with arrow controls. */}
-      <section aria-labelledby="matches-heading" className="bg-cream py-20 sm:py-28">
-        <Container>
-          <div className="max-w-2xl">
-            <Eyebrow>Product matches</Eyebrow>
-            <h2 id="matches-heading" className={`mt-4 ${sectionHeadingClass}`}>
-              Chosen for you. In stock today.
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed">
-              Every match explains why it suits you, what is in it and what it costs. Products shown are fictional.
-            </p>
-          </div>
-          <div className="mt-4">
-            <ProductCarousel items={matches} labelledBy="matches-heading" />
-          </div>
-        </Container>
-      </section>
-
-      <section aria-labelledby="pricing-heading" className="bg-white py-20 sm:py-28">
-        <Container>
-          <div className="mx-auto max-w-2xl text-center">
-            <Eyebrow>Pricing</Eyebrow>
-            <h2 id="pricing-heading" className={`mt-4 ${sectionHeadingClass}`}>
-              Simple plans in naira.
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed">
-              Proposed launch pricing for businesses. Pay monthly, or prepay for longer and save.
-            </p>
-          </div>
-          <div className="mt-12">
-            <PricingPlans />
-          </div>
-          <Button asChild variant="link" className="mt-4 px-0 text-rose-700">
-            <Link href="/pricing">Compare every plan feature</Link>
-          </Button>
-        </Container>
-      </section>
-
-      {/* Explore: pill tabs over a card grid. */}
-      <section aria-labelledby="explore-heading" className="bg-cream py-20 sm:py-28">
-        <Container>
-          <Eyebrow>Explore GlowHub</Eyebrow>
-          <h2 id="explore-heading" className={`mt-4 ${sectionHeadingClass}`}>
-            Find your way in.
+      {/* 6 · Pricing, in one line. */}
+      <section
+        aria-labelledby="pricing-heading"
+        className="bg-ivory pt-24 sm:pt-32 lg:pt-40"
+      >
+        <Container className="text-center">
+          <Eyebrow>Pricing</Eyebrow>
+          <h2
+            id="pricing-heading"
+            className={cn("mx-auto mt-5 max-w-3xl", displayHeadingClass)}
+          >
+            Plans in naira, from {fromPrice} a month.
           </h2>
-          <div className="mt-10">
-            <ExploreGrid cards={exploreCards} />
-          </div>
+          <p className="mt-5 text-lg text-taupe">
+            Monthly, or prepay and save up to {maxSaving}%.
+          </p>
+          <Link href="/pricing" className={cn(textLink, "mt-8")}>
+            Compare plans <ArrowRight aria-hidden className="size-4" />
+          </Link>
         </Container>
       </section>
 
-      <section aria-labelledby="trust-heading" className="bg-white py-20 sm:py-28">
-        <Container>
-          <div className="max-w-2xl">
-            <Eyebrow>Trust and safeguards</Eyebrow>
-            <h2 id="trust-heading" className={`mt-4 ${sectionHeadingClass}`}>
-              Intelligent, and honest about it.
-            </h2>
-          </div>
-          <div className="mt-12">
-            <IconGrid items={safeguards} />
-          </div>
-        </Container>
-      </section>
+      <CtaBand />
+    </>
+  );
+}
 
-      <section aria-labelledby="faq-heading" className="bg-cream pt-20 sm:pt-28">
-        <Container className="grid gap-12 lg:grid-cols-[1fr_1.8fr] lg:gap-20">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <Eyebrow>FAQ</Eyebrow>
-            <h2 id="faq-heading" className={`mt-4 ${sectionHeadingClass}`}>
-              Questions, answered.
-            </h2>
-            <Button asChild variant="outline" className="mt-8">
-              <Link href="/faq">Show more questions</Link>
-            </Button>
-          </div>
-          <FaqList items={faqs.slice(0, 6)} />
-        </Container>
-      </section>
-
-      <CtaBand
-        title="Begin with your skin."
-        body="Explore Glow Scan, or join early access to bring GlowHub to your beauty business."
-      />
+function HeroCopy() {
+  return (
+    <>
+      <h1
+        id="hero-heading"
+        className="font-display text-[2.5rem] leading-[1.08] font-normal tracking-[-0.02em] text-ink sm:text-[3.25rem] lg:text-[2.75rem] xl:text-[3.25rem]"
+      >
+        Beauty, <em>beautifully</em> understood.
+      </h1>
+      <p className="mt-4 text-lg text-ink">Skincare that feels made for you.</p>
+      <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
+        <Button asChild size="lg">
+          <Link href="/glow-scan">Explore Glow Scan</Link>
+        </Button>
+        <Link href="/for-businesses" className={textLink}>
+          For beauty businesses <ArrowRight aria-hidden className="size-4" />
+        </Link>
+      </div>
     </>
   );
 }

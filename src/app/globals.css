@@ -5,47 +5,33 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * GlowHub design tokens. Hex values mirror src/config/brand.ts —
- * change both together; contrast.test.ts checks the text pairings.
+ * GlowHub design tokens — Stone & Plum. Hex values mirror src/config/brand.ts;
+ * change both together. contrast.test.ts checks the text pairings.
  */
 @theme inline {
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
 
   --color-plum: #342038;
-  --color-plum-600: #5f4b63;
-  --color-ink: #302420;
+  --color-plum-600: #4b2f51;
+  --color-espresso: #302420;
+  --color-ivory: #fff7ef;
+  --color-stone: #ddd3c6;
+  --color-sand: #f3eadf;
   --color-rose: #b9527c;
-  --color-rose-700: #9c3f66;
-  --color-rose-800: #8a3459;
-  --color-cream: #fff7ef;
-  --color-blush: #f7e6ea;
+  --color-rose-700: #94395f;
   --color-terracotta: #b96546;
-  --color-terracotta-700: #9a4e33;
-  --color-sage: #859681;
-  --color-sage-700: #5e6e5a;
   --color-gold: #c59b5d;
-  --color-bronze: #a4684a;
-  --color-bronze-700: #9a6448;
-  --color-bronze-800: #87553c;
+  --color-ink: #302420;
+  --color-taupe: #5e5049;
+  --color-line: #e4d9cc;
+  --color-success: #2f6b45;
+  --color-warning: #7a5208;
   --color-danger: #a3302b;
-  --color-warning: #85570b;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -72,38 +58,25 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --background: #fff7ef;
-  --foreground: #342038;
+  --foreground: #302420;
   --card: #ffffff;
-  --card-foreground: #342038;
+  --card-foreground: #302420;
   --popover: #ffffff;
-  --popover-foreground: #342038;
+  --popover-foreground: #302420;
   --primary: #342038;
   --primary-foreground: #fff7ef;
-  --secondary: #f7e6ea;
-  --secondary-foreground: #342038;
-  --muted: #f8eee6;
-  --muted-foreground: #5f4b63;
-  --accent: #f7e6ea;
+  --secondary: #f3eadf;
+  --secondary-foreground: #302420;
+  --muted: #f3eadf;
+  --muted-foreground: #5e5049;
+  --accent: #f3eadf;
   --accent-foreground: #342038;
   --destructive: #a3302b;
-  --border: #eddcd6;
-  --input: #dcc6c0;
+  --border: #e4d9cc;
+  --input: #bfb2a4;
   --ring: #b9527c;
-  --chart-1: #342038;
-  --chart-2: #b9527c;
-  --chart-3: #b96546;
-  --chart-4: #c59b5d;
-  --chart-5: #5f4b63;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #342038;
-  --sidebar-primary: #342038;
-  --sidebar-primary-foreground: #fff7ef;
-  --sidebar-accent: #f7e6ea;
-  --sidebar-accent-foreground: #342038;
-  --sidebar-border: #eddcd6;
-  --sidebar-ring: #b9527c;
 }
 
 @layer base {
@@ -136,17 +109,4 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Glow Scan hero: a scan line sweeping the frame (disabled by the reduced-motion rule above). */
-@keyframes glow-scan {
-  from {
-    top: 4%;
-  }
-  to {
-    top: 94%;
-  }
-}
-.animate-glow-scan {
-  animation: glow-scan 3.4s ease-in-out infinite alternate;
 }

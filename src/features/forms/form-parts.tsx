@@ -1,13 +1,13 @@
 "use client";
 
-import { CircleCheck, Info } from "lucide-react";
+import { CircleAlert, CircleCheck, PlugZap } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 
 const controlClass =
-  "w-full rounded-md border border-input bg-white px-3 text-base text-plum shadow-xs outline-none placeholder:text-plum-600/70 focus-visible:border-rose focus-visible:ring-2 focus-visible:ring-rose/40 aria-invalid:border-danger";
+  "w-full rounded-md border border-input bg-white px-3 text-base text-ink shadow-xs outline-none placeholder:text-taupe/70 focus-visible:border-plum focus-visible:ring-2 focus-visible:ring-rose/50 aria-invalid:border-danger";
 
 type BaseProps = {
   label: string;
@@ -28,7 +28,7 @@ function Label({ htmlFor, label, optional }: { htmlFor: string; label: string; o
   return (
     <label htmlFor={htmlFor} className="text-sm font-semibold">
       {label}
-      {optional && <span className="font-normal text-plum-600"> (optional)</span>}
+      {optional && <span className="font-normal text-taupe"> (optional)</span>}
     </label>
   );
 }
@@ -37,7 +37,7 @@ function Messages({ hint, hintId, error, errorId }: { hint?: string; hintId?: st
   return (
     <>
       {hint && (
-        <p id={hintId} className="text-sm text-plum-600">
+        <p id={hintId} className="text-sm text-taupe">
           {hint}
         </p>
       )}
@@ -160,31 +160,52 @@ export function CheckboxField({
   );
 }
 
-export function PrototypeNotice({ children }: { children: React.ReactNode }) {
+/**
+ * Explains why a submission did not complete. Never a success message: used when the
+ * backend is not connected or returned an error. Takes focus so it is announced.
+ */
+export function ServiceNotice({
+  outcome,
+  feature,
+  children,
+}: {
+  outcome: "not-connected" | "error";
+  /** e.g. "Account creation" */
+  feature: string;
+  children?: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => ref.current?.focus(), [outcome]);
+  const Icon = outcome === "error" ? CircleAlert : PlugZap;
   return (
-    <p className="flex gap-2 rounded-lg border bg-white p-3 text-sm text-plum">
-      <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-rose-700" />
-      <span>{children}</span>
-    </p>
-  );
-}
-
-/** Confirmation shown after a mock submission; takes focus so it is announced. */
-export function SubmittedPanel({ title, children }: { title: string; children: React.ReactNode }) {
-  const ref = useRef<HTMLHeadingElement>(null);
-  useEffect(() => ref.current?.focus(), []);
-  return (
-    <div role="status" className="rounded-xl border bg-white p-6">
-      <h2 ref={ref} tabIndex={-1} className="flex items-center gap-2 font-display text-2xl font-semibold outline-none">
-        <CircleCheck aria-hidden className="size-6 text-sage-700" />
-        {title}
-      </h2>
-      <div className="mt-3 space-y-2 text-sm leading-relaxed text-plum-600">{children}</div>
+    <div ref={ref} tabIndex={-1} role="alert" className="flex gap-3 rounded-lg border border-warning/40 bg-white p-4 text-sm text-ink outline-none">
+      <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-warning" />
+      <div className="space-y-1">
+        <p className="font-semibold">
+          {outcome === "not-connected" ? `${feature} isn't connected yet.` : `${feature} didn't go through.`}
+        </p>
+        <div className="text-taupe">
+          {children ??
+            (outcome === "not-connected"
+              ? "Nothing was sent or stored. Your entries are still here."
+              : "Nothing was saved. Please try again in a moment.")}
+        </div>
+      </div>
     </div>
   );
 }
 
-/** Simulated network latency so the submitting state is visible. Sends nothing. */
-export function mockSubmit() {
-  return new Promise<void>((resolve) => setTimeout(resolve, 500));
+/** Confirmation shown only after the service confirms success; takes focus so it is announced. */
+export function SubmittedPanel({ title, children }: { title: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useEffect(() => ref.current?.focus(), []);
+  return (
+    <div role="status" className="rounded-lg border border-line bg-white p-6">
+      <h2 ref={ref} tabIndex={-1} className="flex items-center gap-2 font-display text-2xl font-medium text-plum outline-none">
+        <CircleCheck aria-hidden className="size-6 text-success" />
+        {title}
+      </h2>
+      <div className="mt-3 space-y-2 text-sm leading-relaxed text-taupe">{children}</div>
+    </div>
+  );
 }

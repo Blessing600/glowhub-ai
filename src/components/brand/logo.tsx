@@ -7,17 +7,12 @@ import { cn } from "@/lib/utils";
  * Aspect ratios below come from each SVG's viewBox — regenerate both together.
  */
 export const logoAssets = {
-  wordmark: { src: "/brand/glowhub-wordmark.svg", ratio: 356.33 / 112.6 },
-  "wordmark-reverse": { src: "/brand/glowhub-wordmark-reverse.svg", ratio: 356.33 / 112.6 },
-  "wordmark-mono": { src: "/brand/glowhub-wordmark-mono.svg", ratio: 356.33 / 112.6 },
-  "wordmark-mono-white": { src: "/brand/glowhub-wordmark-mono-white.svg", ratio: 356.33 / 112.6 },
-  extended: { src: "/brand/glowhub-ai-extended.svg", ratio: 426.3 / 112.6 },
-  "extended-reverse": { src: "/brand/glowhub-ai-extended-reverse.svg", ratio: 426.3 / 112.6 },
-  lockup: { src: "/brand/glowhub-lockup.svg", ratio: 360.33 / 161.99 },
-  "lockup-reverse": { src: "/brand/glowhub-lockup-reverse.svg", ratio: 360.33 / 161.99 },
+  wordmark: { src: "/brand/glowhub-wordmark.svg", ratio: 484.4 / 113 },
+  "wordmark-reverse": { src: "/brand/glowhub-wordmark-reverse.svg", ratio: 484.4 / 113 },
+  "wordmark-mono": { src: "/brand/glowhub-wordmark-mono.svg", ratio: 484.4 / 113 },
+  "wordmark-mono-white": { src: "/brand/glowhub-wordmark-mono-white.svg", ratio: 484.4 / 113 },
+  monogram: { src: "/brand/glowhub-monogram.svg", ratio: 1 },
   compact: { src: "/brand/glowhub-compact.svg", ratio: 1 },
-  "monogram-rose": { src: "/brand/glowhub-monogram-rose.svg", ratio: 1 },
-  "monogram-plum": { src: "/brand/glowhub-monogram-plum.svg", ratio: 1 },
 } as const;
 
 export type LogoVariant = keyof typeof logoAssets;
@@ -36,7 +31,7 @@ export function Logo({
   variant = "wordmark",
   height = 32,
   className,
-  alt = "GlowHub",
+  alt = "GlowHub AI",
   priority,
 }: LogoProps) {
   const { src, ratio } = logoAssets[variant];

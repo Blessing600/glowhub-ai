@@ -1,12 +1,13 @@
 # GlowHub AI
 
-**Beautiful businesses. Intelligent commerce.**
+**Beauty is your business. Intelligence is ours.**
 
-Frontend prototype for GlowHub AI by AERA Technologies (pre-launch): beauty discovery and
-Glow Scan for shoppers, and an AI-assisted operating system for beauty businesses.
+Frontend for GlowHub AI by AERA Technologies: the AI-native selling and business-intelligence
+platform for African beauty businesses, with Glow Scan personal skincare guidance for shoppers.
 
-> Prototype only. All data is fictional. There is no production authentication, live AI,
-> real payment, supplier approval, outbound messaging or marketplace checkout.
+> Frontend only. Backend services (auth, persistence, payments, inference) connect through
+> typed adapters in `src/services/`; until `NEXT_PUBLIC_API_URL` is set, those features show an
+> honest "not connected" state and send nothing. See `docs/frontend-api-contracts.md`.
 
 ## Getting started
 
@@ -38,9 +39,10 @@ Brand preview: http://localhost:3000/internal/brand
 
 - [Implementation brief and PRD](docs/product-requirements.md)
 - [Implementation plan and milestone log](docs/implementation-plan.md)
+- [Frontend API contracts](docs/frontend-api-contracts.md)
+- [Brand guidelines — Emerald Atelier](docs/brand-guidelines.md)
 - [Frontend architecture](docs/frontend-architecture.md)
 - [Design system](docs/design-system.md)
-- [Brand guidelines](docs/brand-guidelines.md)
 - Agent guidance: [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md)
 
 ## Fonts and licences

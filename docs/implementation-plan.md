@@ -1,7 +1,7 @@
 # Implementation plan and milestone log
 
-Resumable log for the GlowHub AI frontend prototype. Source of truth for scope:
-`docs/product-requirements.md`. Update this file at the end of every milestone with what
+Resumable log for the GlowHub AI frontend. Scope: `AGENTS.md` (current rules) and
+`docs/product-requirements.md` (original PRD; superseded where AGENTS.md differs). Update this file at the end of every milestone with what
 shipped, how it was verified (real command output only) and open issues.
 
 ## Status
@@ -9,10 +9,11 @@ shipped, how it was verified (real command output only) and open issues.
 | Milestone | Scope | Status |
 | --- | --- | --- |
 | M1 | Foundation and brand | ✅ Complete — 16 Nov 2026 |
-| M2 | Public website, interactive demo, pricing | ✅ Complete — 16 Nov 2026 |
-| M3 | Consumer app, Glow Scan, routines | ⏳ Next |
-| M4 | Legal and privacy pages, consent UI | ☐ |
-| M5 | Business onboarding, dashboard, catalogue, batches | ☐ |
+| M2 | Public website, interactive demo, pricing | ✅ Complete — 16 Nov 2026 (demo retired 19 Nov) |
+| R1 | Emerald Atelier redesign, live positioning, Glow Scan journey, honest service states | ✅ Complete — 19 Nov 2026 |
+| M3 | Glow Scan — connect catalogue recommendations once the API exists | ◐ Frontend done; backend pending |
+| M4 | Legal and privacy pages, consent UI | ◐ Drafts shipped (privacy, terms, security); counsel review pending |
+| M5 | Business onboarding, dashboard, catalogue, batches (workspace shell with empty states) | ⏳ Next |
 | M6 | Supplier verification, sales, CRM, consultations, reports | ☐ |
 | M7 | Intelligence assistant, marketing, storefront | ☐ |
 | M8 | Billing, team, settings | ☐ |
@@ -298,3 +299,109 @@ destination folder. To swap one in, pass `src="/images/<folder>/<file>.webp"` an
 - Glow Scan header placement still needs a product decision.
 - About page has no founder name, photo or story; add only once approved for publication.
 - Brand palette and pricing remain proposals pending approval.
+
+---
+
+## R1 — Emerald Atelier redesign ✅ (19 Nov 2026)
+
+Owner brief: "Claude Code master implementation prompt" (live site, Emerald Atelier, no invented
+data, Glow Scan as a first-class journey). Owner decisions: the brief supersedes the old
+AGENTS.md rules; `/demo` and `/early-access` removed with redirects; scope limited to marketing,
+Glow Scan and auth (workspace screens next); Vercel deploy after this redesign.
+
+Shipped:
+- Brand: Emerald Atelier tokens (`src/config/brand.ts`, `globals.css`), Bodoni Moda / Manrope /
+  IBM Plex Mono via `next/font`, new generated wordmark and monogram (Bodoni + copper diamond),
+  restyled buttons, header (Product, Solutions, Glow Scan, How it works, Pricing, Sign in,
+  Get started), footer with Privacy / Terms / Security / Support, `/internal/brand`.
+- Homepage rebuilt in nine sections: editorial hero (shop-owner photo, 45/55), hidden complexity,
+  GlowHub Intelligence (answer structure, no fabricated output), sell smarter + Glow Scan
+  spotlight, operations module tabs showing true day-one empty states, women in beauty, trust,
+  pricing, FAQ + closing band.
+- New `/glow-scan`: photo/no-photo choice, informed consent before camera, local camera or
+  upload preview with retake / rotate / remove, "Analyse photo" → not-connected notice,
+  safety screening (referral / urgent), questionnaire (RHF + Zod), results with editable budget
+  and exclusions, honest "no catalogue connected" state, match cards + comparison for real data,
+  editable general order of use, "Save routine" → not-connected notice.
+- Services: `apiRequest` + adapters for register, sign-in, support, Glow Scan; documented in
+  `docs/frontend-api-contracts.md`. Removed `mockSubmit`, the fictional demo seed, early-access
+  form, product art and every fixture-driven marketing visual. `NEXT_PUBLIC_DEMO_MODE` removed.
+- Pages rewritten: Product, Solutions, How it works, Pricing, About, FAQ, Support, Register,
+  Sign in; new Privacy, Terms, Security drafts. Redirects: `/demo` → `/how-it-works`,
+  `/early-access` → `/register`, `/for-shoppers` → `/glow-scan`.
+- Docs: AGENTS.md, brand guidelines, design system, architecture, photo credits,
+  `docs/market-opportunity.md` (TAM/SAM/SOM as internal assumptions only).
+
+Verification (19 Nov 2026, production build, installed Chrome):
+- `npm run lint`: clean. `npm run typecheck`: clean. `npm run test`: all unit tests pass.
+- `npm run build`: success, 24 static routes.
+- `PLAYWRIGHT_CHANNEL=chrome npx playwright test`: 79 passed, 5 skipped by design (desktop-only
+  / mobile-only checks). Covers every route at 360/390/768/1024/1440 for overflow, link crawl,
+  sitemap, banned-phrase scan, redirects, module tabs, registration/contact not-connected states,
+  Glow Scan camera allow/deny/close/retake/step-exit track cleanup, upload validation,
+  remove, no network writes, questionnaire validation, results, routine edit, emergency referral.
+- Screenshots reviewed at 1440, 768, 390 and 360 (hero, Glow Scan, results).
+
+Open decisions / known issues:
+- Pricing in `src/config/pricing.ts` is still marked "proposed" in code; confirm before relying on it publicly.
+- Hero and editorial photos are Pexels stock without guaranteed model releases — commission
+  replacements (brief in `docs/photo-credits.md`).
+- `src/lib/reorder.ts` is no longer used by any screen (was used by the retired demo); kept for
+  the workspace inventory milestone.
+- Legal entity, contacts and effective dates are unset in env; pages show "to be confirmed".
+
+### R2 · Premium visual redesign (19 Nov 2026)
+
+Brief: more premium, feminine, visual; cut homepage copy 50–70%; luxurious white space;
+Playfair Display + Manrope; beauty photography as the centrepiece.
+
+- Typography: display font Bodoni Moda → **Playfair Display** (400, italic emphasis,
+  `text-balance`); eyebrows moved from Plex Mono to tracked Manrope. Logo unchanged (Bodoni).
+- Spacing: sections `py-24 sm:py-32 lg:py-40`; larger CTA band padding.
+- Homepage rebuilt as nine short sections: portrait hero · one-line statement · Intelligence
+  (headline + one sentence + interface panel) · Glow Scan editorial spotlight · Sell smarter
+  (titles + outcomes only) · workspace module tabs · asymmetric three-portrait gallery ·
+  trust principles as an index (detail on /security) · one-line pricing teaser (derived from
+  `config/pricing.ts`). Homepage FAQ and full plan cards removed (live on /faq and /pricing).
+- Seven new Pexels photographs (credits in `docs/photo-credits.md`); the Glow Scan image is
+  cropped to remove third-party branding and captioned as a model photograph.
+
+Verification (19 Nov 2026): lint and typecheck clean; unit tests 93/93; build success;
+`PLAYWRIGHT_CHANNEL=chrome npx playwright test` 79 passed, 5 skipped by design. Homepage
+screenshots reviewed at 1440 and 390 with no horizontal overflow.
+
+### R3 · Brief v3.0: Stone & Plum, stone hero, working Glow Scan (20 Nov 2026)
+
+Decisions (user, 20 Nov): the "OPULENCE" hero in the brief is a third-party concept, not a
+GlowHub asset (absent from repo history and the deployed site), so the hero recreates its mood
+with a licensed photo and live text; palette → plum on beige/stone; Glow Scan gets a labelled
+sample catalogue now, the merchant workspace is the next milestone.
+
+- Palette Stone & Plum (`brand.ts`, `globals.css`, contrast pairs incl. stone, logos regenerated
+  with a rose diamond). Classes renamed: emerald→plum, forest→espresso, copper→rose,
+  champagne→gold, slate→taupe.
+- Hero: Pexels 8100780 graded to stone; desktop uses a widened version, phones the original
+  crop (`<picture>` via `getImageProps`). Live "RADIANCE" word, "Beauty, beautifully
+  understood.", CTAs "Explore Glow Scan" / "For beauty businesses", scroll cue.
+- Homepage per the brief's pacing: hero · Glow Scan ("Meet your skin.") · match vignette (a
+  real `recommendFromSample` run, labelled) · founders gallery · "Beauty businesses,
+  beautifully run." with three compact UI snippets · one-line pricing · CTA band.
+- Navigation trimmed to Glow Scan, For businesses, Pricing, About.
+- Glow Scan: `sample-catalogue.ts` (14 unbranded products, ranked, constrained, routine with
+  products, budget-total warning) used when the recommendations API is not connected;
+  `routine-store.ts` saves the routine on the device; "Your saved routine" panel with delete.
+- `reference/` holds the brief's mood images with a README marking them third-party.
+- Docs: AGENTS.md, brand guidelines, design system, API contracts, photo credits,
+  market-opportunity (brief's TAM/SAM/SOM, still internal).
+
+Verification (20 Nov 2026): lint and typecheck clean; unit 105/105; build success;
+`PLAYWRIGHT_CHANNEL=chrome npx playwright test` 81 passed, 5 skipped by design. Screenshots
+reviewed at 1440, 768 and 390 (no horizontal overflow). The focus-ring test now waits for the
+ring's fade-in (it previously sampled mid-transition).
+
+Next / open:
+- [ ] Merchant workspace with browser-persisted sample data (catalogue, inventory, suppliers,
+  customers, sales, insight cards) — brief §4.
+- [ ] Optional public "Market opportunity" page (typed module; external sources verified first).
+- [ ] Trim inner-page copy to the homepage's level.
+- Unused images kept for now: `hero/portrait-headwrap`, `portrait-joy`, `portrait-palms`.

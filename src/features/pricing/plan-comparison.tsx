@@ -4,10 +4,10 @@ import { entitlementRows, plans } from "@/config/pricing";
 export function PlanComparison() {
   return (
     <>
-      <div className="hidden overflow-hidden rounded-xl border bg-white md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-line bg-white md:block">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Features included in each plan</caption>
-          <thead className="bg-blush">
+          <thead className="bg-sand">
             <tr>
               <th scope="col" className="p-4 font-semibold">
                 Feature
@@ -19,14 +19,14 @@ export function PlanComparison() {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-line">
             {entitlementRows.map((row) => (
               <tr key={row.feature}>
                 <th scope="row" className="p-4 font-medium">
                   {row.feature}
                 </th>
                 {plans.map((plan) => (
-                  <td key={plan.id} className="p-4 text-plum-600">
+                  <td key={plan.id} className="p-4 text-taupe">
                     {row.values[plan.id]}
                   </td>
                 ))}
@@ -38,12 +38,12 @@ export function PlanComparison() {
 
       <ul className="space-y-3 md:hidden">
         {entitlementRows.map((row) => (
-          <li key={row.feature} className="rounded-xl border bg-white p-4">
+          <li key={row.feature} className="rounded-lg border border-line bg-white p-4">
             <h3 className="text-sm font-semibold">{row.feature}</h3>
             <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
               {plans.map((plan) => (
                 <div key={plan.id} className="contents">
-                  <dt className="text-plum-600">{plan.name}</dt>
+                  <dt className="text-taupe">{plan.name}</dt>
                   <dd>{row.values[plan.id]}</dd>
                 </div>
               ))}

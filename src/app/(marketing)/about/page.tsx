@@ -1,74 +1,55 @@
 import type { Metadata } from "next";
 
-import { ProductStill } from "@/components/marketing/product-art";
 import { CtaBand, PageHeader, Section } from "@/components/marketing/section";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Why GlowHub exists, what we're building first, and how AERA Technologies supports it.",
+  description: "Why GlowHub AI exists and how we approach intelligence for Africa's beauty businesses.",
+  alternates: { canonical: "/about" },
 };
 
 /**
- * Founder identity, operating entity and story are not yet approved for
- * publication (PRD §7) — do not add names, photos or biography until they are.
+ * Founder identity, operating entity and story are not approved for publication —
+ * do not add names, photos, biography, customer counts or partners until they are.
  */
 export default function AboutPage() {
   return (
     <>
       <PageHeader
-        eyebrow="About GlowHub"
+        eyebrow="About GlowHub AI"
         photo={{
-          shot: "About: beauty entrepreneurs at work in a bright Lagos salon or studio, natural candid moment.",
-          folder: "beauty-businesses",
-          src: "/images/beauty-businesses/beauty-creator.webp",
-          alt: "A smiling woman sits at a table of cosmetics, ready to film.",
+          shot: "Studio portrait of a beauty founder.",
+          folder: "hero",
+          src: "/images/hero/portrait-studio.webp",
+          alt: "Studio beauty portrait of a woman with deep brown skin resting her chin on her hand.",
+          position: "50% 25%",
         }}
-        title="A trusted beauty ecosystem, built from the business up."
+        title="Intelligence, built for the business of beauty."
       />
 
-      <Section headingId="about-why" tone="white" eyebrow="Why we started" title="The problem is personal.">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
-          <div className="max-w-2xl space-y-4 text-base leading-relaxed text-plum-600">
-            <p>
-              GlowHub began with a founder&apos;s own frustration: struggling to find authentic skincare, products that
-              were often out of stock, discovery scattered across social media, costly international shipping and
-              vendors that were hard to trust.
-            </p>
-            <p>
-              Beauty businesses face the other side of the same problem — they need better ways to manage stock, show
-              where their products come from and reach the right customers. One person&apos;s experience isn&apos;t
-              proof of a nationwide problem, so we&apos;re testing these ideas with retailers, brands and beauty
-              professionals before launch.
-            </p>
-          </div>
-          <ProductStill className="mx-auto max-w-md" />
-        </div>
-      </Section>
-
-      <Section headingId="about-approach" eyebrow="Our approach" title="Useful first. Marketplace later.">
-        <div className="max-w-3xl space-y-4 text-base leading-relaxed text-plum-600">
+      <Section headingId="about-why" tone="white" eyebrow="Why we exist" title="Great beauty businesses deserve great tools.">
+        <div className="max-w-3xl space-y-4 text-lg leading-relaxed text-taupe">
           <p>
-            The long-term vision is a trusted beauty ecosystem connecting shoppers with reliable sellers. We&apos;re
-            starting with software that is useful to a single beauty business on day one — stock, sales, customers,
-            consultations and supplier evidence — with AI doing real operational work.
+            Across Africa, beauty businesses are built by people with deep knowledge of their customers — and too
+            little time. Stock lives in notebooks, sales in chats, supplier evidence in folders, and the decisions that
+            shape a month&apos;s profit are made on instinct.
           </p>
           <p>
-            A connected marketplace comes later, once there are enough sellers, solid trust processes and dependable
-            delivery. We&apos;re starting in Nigeria, with a first pilot city proposed as Lagos.
+            GlowHub AI brings those threads together and puts intelligence to work on them: helping owners understand
+            their customers, sell with confidence and run operations with clarity.
           </p>
         </div>
       </Section>
 
-      <Section headingId="about-aera" tone="white" eyebrow="Who's building it" title="Founder-led, with AERA Technologies.">
-        <div className="max-w-3xl space-y-4 text-base leading-relaxed text-plum-600">
+      <Section headingId="about-approach" eyebrow="Our approach" title="Useful, honest, in your control.">
+        <div className="max-w-3xl space-y-4 text-lg leading-relaxed text-taupe">
           <p>
-            The founder leads customer research, partnerships, commercial decisions and business operations. AERA
-            Technologies contributes product, engineering, design and operational support to take GlowHub from idea to
-            launch.
+            We build AI that works inside real workflows rather than beside them. It reads the records you authorise,
+            shows its working, says when it doesn&apos;t know, and waits for your approval before anything changes.
           </p>
           <p>
-            GlowHub is pre-launch. We have no customers, revenue or partnerships to announce yet, and we won&apos;t
-            claim any until they&apos;re real.
+            For shoppers, Glow Scan offers personal, cosmetic skincare guidance with dignity: no diagnosis, no scoring
+            of anyone&apos;s skin and no photo processing without clear permission.
           </p>
         </div>
       </Section>

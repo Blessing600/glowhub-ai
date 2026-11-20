@@ -15,7 +15,7 @@ test.describe("foundation", () => {
   test("home renders the brand proposition and is not indexable", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Meet the AI agent running the future of beauty commerce." }),
+      page.getByRole("heading", { level: 1, name: "Beauty, beautifully understood." }),
     ).toBeVisible();
     await expectImagesLoaded(page);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
@@ -43,17 +43,20 @@ test.describe("foundation", () => {
     await page.goto("/");
     await page.keyboard.press("Tab");
     await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
-    const link = page.getByRole("banner").getByRole("link", { name: "Get early access" });
+    const link = page.getByRole("banner").getByRole("link", { name: "Get started" });
     for (let i = 0; i < 15 && !(await link.evaluate((el) => el === document.activeElement)); i++) {
       await page.keyboard.press("Tab");
     }
     await expect(link).toBeFocused();
-    // Buttons draw focus as a solid rose ring (box-shadow) rather than an outline.
-    const focus = await link.evaluate((el) => {
-      const style = getComputedStyle(el);
-      return { outline: style.outlineStyle, shadow: style.boxShadow };
-    });
-    expect(focus.outline !== "none" || focus.shadow.includes("rgb(185, 82, 124)")).toBe(true);
+    // Buttons draw focus as a solid rose ring (box-shadow) that fades in; wait for it to settle.
+    await expect
+      .poll(() =>
+        link.evaluate((el) => {
+          const style = getComputedStyle(el);
+          return style.outlineStyle !== "none" || style.boxShadow.includes("rgb(185, 82, 124)");
+        }),
+      )
+      .toBe(true);
   });
 
   test("manifest icons, favicon and robots are served", async ({ request }) => {

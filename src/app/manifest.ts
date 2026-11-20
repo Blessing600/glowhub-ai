@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 import { brandCopy, palette } from "@/config/brand";
 
 /**
- * PWA manifest. No service worker is registered: the prototype must not
- * cache consultation, scan or other sensitive data (brief §15).
+ * PWA manifest. No service worker is registered: consultation, scan and other
+ * sensitive data must never be cached offline.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: brandCopy.secondaryLine,
     start_url: "/",
     display: "standalone",
-    background_color: palette.cream,
+    background_color: palette.ivory,
     theme_color: palette.plum,
     icons: [
       { src: "/brand/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

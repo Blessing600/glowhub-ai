@@ -4,11 +4,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * Editorial photo slot. Until licensed photography is supplied (brief §3) it
- * describes the intended shot so it can be commissioned; every use is listed in
- * docs/implementation-plan.md under "Photography to supply". Pass `src` (a file
- * under public/images) and `alt` once the image exists. Never use unlicensed or
- * hotlinked images. The slot fills its box: size it with className (e.g. aspect-*).
+ * Editorial photo slot. With `src` (a licensed file under public/images, recorded in
+ * docs/photo-credits.md) it renders a responsive next/image. Without one it renders a
+ * clearly labelled, replaceable slot describing the shot to commission — never a fake
+ * "final" image. The slot fills its box: size it with className (e.g. aspect-*).
  */
 export function PhotoPlaceholder({
   shot,
@@ -17,6 +16,7 @@ export function PhotoPlaceholder({
   alt = "",
   priority,
   sizes = "(min-width: 1024px) 50vw, 100vw",
+  position,
   className,
 }: {
   /** Description of the intended photograph. */
@@ -27,29 +27,36 @@ export function PhotoPlaceholder({
   alt?: string;
   priority?: boolean;
   sizes?: string;
+  /** CSS object-position, e.g. "70% 30%", to keep faces in frame across crops. */
+  position?: string;
   className?: string;
 }) {
   if (src) {
     return (
-      <div className={cn("relative overflow-hidden rounded-xl bg-blush", className)}>
-        <Image src={src} alt={alt} fill priority={priority} sizes={sizes} className="object-cover" />
+      <div className={cn("relative overflow-hidden rounded-lg bg-sand", className)}>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes={sizes}
+          quality={70}
+          className="object-cover"
+          style={position ? { objectPosition: position } : undefined}
+        />
       </div>
     );
   }
 
   return (
-    <figure className={cn("relative overflow-hidden rounded-xl bg-[#ead6c8]", className)}>
-      <div aria-hidden className="absolute inset-0">
-        <div className="absolute -top-[12%] left-1/2 aspect-square w-[78%] -translate-x-1/2 rounded-full bg-gold/45" />
-        <div className="absolute -bottom-[30%] left-1/2 aspect-square w-[120%] -translate-x-1/2 rounded-full bg-terracotta/25" />
-      </div>
-      <figcaption className="absolute top-4 left-4 max-w-[16rem] rounded-lg bg-white/90 p-3 text-xs text-plum">
+    <figure className={cn("relative overflow-hidden rounded-lg border border-dashed border-plum/30 bg-sand", className)}>
+      <figcaption className="absolute top-4 left-4 max-w-[17rem] rounded-md bg-white p-3 text-xs text-ink">
         <span className="flex items-center gap-2 font-semibold">
           <ImageIcon aria-hidden className="size-4 text-rose-700" />
           Photograph to be supplied
         </span>
-        <span className="mt-1 block text-plum-600">{shot}</span>
-        <span className="mt-1 block text-plum-600">public/images/{folder}</span>
+        <span className="mt-1 block text-taupe">{shot}</span>
+        <span className="mt-1 block font-mono text-taupe">public/images/{folder}</span>
       </figcaption>
     </figure>
   );

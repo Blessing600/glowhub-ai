@@ -3,7 +3,7 @@
  *
  *   npm run brand:generate
  *
- * Glyphs come from Cormorant Garamond (SIL OFL 1.1) and Manrope (SIL OFL 1.1)
+ * Glyphs come from Bodoni Moda (SIL OFL 1.1) and Manrope (SIL OFL 1.1)
  * via @fontsource, and are converted to SVG outlines with opentype.js, so the
  * output contains vector paths only — no embedded fonts or raster images.
  * PNG/ICO icons are rasterised from those SVGs with sharp.
@@ -20,11 +20,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const outDir = path.join(root, "public/brand");
 const appDir = path.join(root, "src/app");
 
-// Mirrors src/config/brand.ts
+// Mirrors src/config/brand.ts (Stone & Plum)
 const color = {
   plum: "#342038",
+  espresso: "#302420",
+  ivory: "#FFF7EF",
   rose: "#B9527C",
-  cream: "#FFF7EF",
 };
 
 function loadFont(file) {
@@ -32,23 +33,20 @@ function loadFont(file) {
   return opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 }
 
-const display = loadFont("cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff");
+const display = loadFont("bodoni-moda/files/bodoni-moda-latin-500-normal.woff");
 const sans = loadFont("manrope/files/manrope-latin-600-normal.woff");
 
 /**
  * Optical kerning for the wordmark, in font units (1000/em).
- * Cormorant's default spacing is set for text; at logo sizes the
- * round-to-round and stem pairs read loose, so they are tightened.
+ * Bodoni's text spacing reads loose at logo sizes, so round and stem pairs are tightened.
  */
 const wordmarkKerning = {
-  gl: -18,
-  lo: -10,
-  ow: -32,
-  wh: -22,
-  hu: -14,
-  ub: -12,
-  "b.": -6,
-  "h ": 0,
+  gl: -14,
+  lo: -8,
+  ow: -26,
+  wh: -18,
+  hu: -10,
+  ub: -8,
 };
 
 /** Lays out `text` and returns per-glyph SVG paths plus the overall bounds. */
@@ -88,26 +86,6 @@ function bounds(glyphs) {
 
 const d = (glyphs) => glyphs.map((g) => g.path.toPathData(2)).join("");
 
-/**
- * Enlarges the period around its own centre so the rose accent stays
- * visible at small sizes, keeping its left edge where the kerning put it.
- */
-const PERIOD_SCALE = 1.25;
-function emphasisePeriod(glyph) {
-  const b = glyph.path.getBoundingBox();
-  const cx = b.x1 + ((b.x2 - b.x1) * PERIOD_SCALE) / 2;
-  const cy = (b.y1 + b.y2) / 2;
-  const ox = (b.x1 + b.x2) / 2;
-  const axes = [["x", "y"], ["x1", "y1"], ["x2", "y2"]];
-  glyph.path.commands.forEach((c) => {
-    for (const [kx, ky] of axes) {
-      if (kx in c) c[kx] = cx + (c[kx] - ox) * PERIOD_SCALE;
-      if (ky in c) c[ky] = cy + (c[ky] - cy) * PERIOD_SCALE;
-    }
-  });
-  return glyph;
-}
-
 function svgDoc({ box, pad = 0, title, body, background }) {
   const x = box.x1 - pad;
   const y = box.y1 - pad;
@@ -120,141 +98,76 @@ function svgDoc({ box, pad = 0, title, body, background }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-labelledby="t"><title id="t">${title}</title>${bg}${body}</svg>\n`;
 }
 
-/* ---------- Wordmark: "glowhub." ---------- */
-function wordmark(letters, period) {
-  const { glyphs } = layout(display, "glowhub.", { size: 100, kerning: wordmarkKerning });
-  emphasisePeriod(glyphs[7]);
-  const word = glyphs.slice(0, 7);
-  const dot = glyphs.slice(7);
-  return {
-    box: bounds(glyphs),
-    body: `<path fill="${letters}" d="${d(word)}"/><path fill="${period}" d="${d(dot)}"/>`,
-  };
-}
-
-/* ---------- Extended: "glowhub ai" ---------- */
-function extended(letters, accent) {
-  const { glyphs } = layout(display, "glowhub ai", {
-    size: 100,
-    kerning: { ...wordmarkKerning, "b ": -8, ai: -10 },
-  });
-  return {
-    box: bounds(glyphs),
-    body: `<path fill="${letters}" d="${d(glyphs.slice(0, 7))}"/><path fill="${accent}" d="${d(glyphs.slice(8))}"/>`,
-  };
-}
-
-/* ---------- Lockup: wordmark + tagline ---------- */
-function lockup(letters, period) {
-  const mark = layout(display, "glowhub.", { size: 100, kerning: wordmarkKerning });
-  emphasisePeriod(mark.glyphs[7]);
-  const markBox = bounds(mark.glyphs);
-  const markWidth = markBox.x2 - markBox.x1;
-  // Size the tagline so it spans the letters (excluding the period).
-  const letterBox = bounds(mark.glyphs.slice(0, 7));
-  const target = letterBox.x2 - letterBox.x1;
-  const probe = layout(sans, "BEAUTY MEETS INTELLIGENCE", { size: 10, tracking: 260 });
-  const probeBox = bounds(probe.glyphs);
-  const size = (10 * target) / (probeBox.x2 - probeBox.x1);
-  const tagline = layout(sans, "BEAUTY MEETS INTELLIGENCE", {
-    size,
-    tracking: 260,
-    x: 0,
-    y: markBox.y2 + size * 2.4,
-  });
-  const tagBox = bounds(tagline.glyphs);
-  const shift = letterBox.x1 - tagBox.x1;
-  const tagD = tagline.glyphs
-    .map((g) => {
-      g.path.commands.forEach((c) => {
-        for (const k of ["x", "x1", "x2"]) if (k in c) c[k] += shift;
-      });
-      return g.path.toPathData(2);
-    })
-    .join("");
-  const box = {
-    x1: Math.min(markBox.x1, tagBox.x1 + shift),
-    y1: markBox.y1,
-    x2: Math.max(markBox.x1 + markWidth, tagBox.x2 + shift),
-    y2: tagBox.y2,
-  };
+/* ---------- Wordmark: "glowhub" + rose diamond + "AI" ---------- */
+function wordmark(letters, accent) {
+  const word = layout(display, "glowhub", { size: 100, kerning: wordmarkKerning });
+  const wordBox = bounds(word.glyphs);
+  const xHeight = 0.46 * 100; // Bodoni Moda x-height ≈ 0.46em
+  const gap = 12;
+  const diamond = 9;
+  const dx = wordBox.x2 + gap + diamond;
+  const dy = -xHeight / 2;
+  const diamondPath = `M${dx} ${dy - diamond}L${dx + diamond} ${dy}L${dx} ${dy + diamond}L${dx - diamond} ${dy}Z`;
+  const ai = layout(sans, "AI", { size: 34, tracking: 120, x: dx + diamond + gap });
+  const aiBox = bounds(ai.glyphs);
+  // Align the cap height of "AI" with the wordmark's x-height.
+  const shift = -xHeight - aiBox.y1 + (xHeight - (aiBox.y2 - aiBox.y1)) / 2;
+  ai.glyphs.forEach((g) =>
+    g.path.commands.forEach((c) => {
+      for (const k of ["y", "y1", "y2"]) if (k in c) c[k] += shift;
+    }),
+  );
+  const box = bounds([...word.glyphs, ...ai.glyphs]);
   return {
     box,
-    body: `<path fill="${letters}" d="${d(mark.glyphs.slice(0, 7))}"/><path fill="${period}" d="${d(mark.glyphs.slice(7))}"/><path fill="${letters}" d="${tagD}"/>`,
+    body: `<path fill="${letters}" d="${d(word.glyphs)}"/><path fill="${accent}" d="${diamondPath}"/><path fill="${letters}" d="${d(ai.glyphs)}"/>`,
   };
 }
 
-/* ---------- Monogram: "g." on a rounded tile ---------- */
-function monogram({ tile, letter, period, size = 512, glyphScale = 0.62, radius = 0.22, rounded = true }) {
-  const fontSize = 100;
-  const { glyphs } = layout(display, "g.", { size: fontSize, kerning: { "g.": -30 } });
+/* ---------- Monogram: "g" with a rose diamond on a rounded tile ---------- */
+function monogram({ tile, letter, accent, size = 512, glyphScale = 0.6, radius = 0.2, rounded = true }) {
+  const { glyphs } = layout(display, "g", { size: 100 });
   const box = bounds(glyphs);
   const gw = box.x2 - box.x1;
   const gh = box.y2 - box.y1;
   const s = (size * glyphScale) / Math.max(gw, gh);
-  const tx = (size - gw * s) / 2 - box.x1 * s;
+  const tx = (size - gw * s) / 2 - box.x1 * s - size * 0.04;
   const ty = (size - gh * s) / 2 - box.y1 * s;
   const r = rounded ? size * radius : 0;
-  const rect = tile
-    ? `<rect width="${size}" height="${size}" rx="${r.toFixed(2)}" fill="${tile}"/>`
-    : "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-labelledby="t"><title id="t">GlowHub</title>${rect}<g transform="translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${s.toFixed(4)})"><path fill="${letter}" d="${d(glyphs.slice(0, 1))}"/><path fill="${period}" d="${d(glyphs.slice(1))}"/></g></svg>\n`;
+  const rect = tile ? `<rect width="${size}" height="${size}" rx="${r.toFixed(2)}" fill="${tile}"/>` : "";
+  const dm = size * 0.05;
+  const dcx = size / 2 + (gw * s) / 2 + dm * 0.4;
+  const dcy = size / 2 - (gh * s) * 0.18;
+  const diamondPath = `M${dcx} ${dcy - dm}L${dcx + dm} ${dcy}L${dcx} ${dcy + dm}L${dcx - dm} ${dcy}Z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-labelledby="t"><title id="t">GlowHub AI</title>${rect}<g transform="translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${s.toFixed(4)})"><path fill="${letter}" d="${d(glyphs)}"/></g><path fill="${accent}" d="${diamondPath}"/></svg>\n`;
 }
 
 /* ---------- Write files ---------- */
 fs.mkdirSync(outDir, { recursive: true });
+for (const old of fs.readdirSync(outDir)) fs.rmSync(path.join(outDir, old));
 const write = (name, content) => {
   fs.writeFileSync(path.join(outDir, name), content);
   return name;
 };
 const pad = 6;
+const title = "GlowHub AI";
 
-const files = [];
-{
-  const w = wordmark(color.plum, color.rose);
-  files.push(write("glowhub-wordmark.svg", svgDoc({ ...w, pad, title: "glowhub." })));
-}
-{
-  const w = wordmark(color.cream, color.rose);
-  files.push(write("glowhub-wordmark-reverse.svg", svgDoc({ ...w, pad, title: "glowhub." })));
-}
-{
-  const w = wordmark(color.plum, color.plum);
-  files.push(write("glowhub-wordmark-mono.svg", svgDoc({ ...w, pad, title: "glowhub." })));
-}
-{
-  const w = wordmark("#FFFFFF", "#FFFFFF");
-  files.push(write("glowhub-wordmark-mono-white.svg", svgDoc({ ...w, pad, title: "glowhub." })));
-}
-{
-  const w = extended(color.plum, color.rose);
-  files.push(write("glowhub-ai-extended.svg", svgDoc({ ...w, pad, title: "glowhub ai" })));
-}
-{
-  const w = extended(color.cream, color.rose);
-  files.push(write("glowhub-ai-extended-reverse.svg", svgDoc({ ...w, pad, title: "glowhub ai" })));
-}
-{
-  const w = lockup(color.plum, color.rose);
-  files.push(write("glowhub-lockup.svg", svgDoc({ ...w, pad: 8, title: "glowhub. Beauty meets intelligence" })));
-}
-{
-  const w = lockup(color.cream, color.rose);
-  files.push(write("glowhub-lockup-reverse.svg", svgDoc({ ...w, pad: 8, title: "glowhub. Beauty meets intelligence" })));
-}
-// Compact = "g." without a tile, for tight horizontal spaces.
-files.push(write("glowhub-compact.svg", monogram({ tile: null, letter: color.plum, period: color.rose, glyphScale: 0.9 })));
-files.push(write("glowhub-monogram-rose.svg", monogram({ tile: color.rose, letter: color.cream, period: color.cream })));
-files.push(write("glowhub-monogram-plum.svg", monogram({ tile: color.plum, letter: color.cream, period: color.rose })));
+const files = [
+  write("glowhub-wordmark.svg", svgDoc({ ...wordmark(color.plum, color.rose), pad, title })),
+  write("glowhub-wordmark-reverse.svg", svgDoc({ ...wordmark(color.ivory, color.rose), pad, title })),
+  write("glowhub-wordmark-mono.svg", svgDoc({ ...wordmark(color.plum, color.plum), pad, title })),
+  write("glowhub-wordmark-mono-white.svg", svgDoc({ ...wordmark("#FFFFFF", "#FFFFFF"), pad, title })),
+  write("glowhub-monogram.svg", monogram({ tile: color.plum, letter: color.ivory, accent: color.rose })),
+  write("glowhub-compact.svg", monogram({ tile: null, letter: color.plum, accent: color.rose, glyphScale: 0.84 })),
+];
 
-// Favicon uses the plum tile: higher contrast than rose at 16px.
-const faviconSvg = monogram({ tile: color.plum, letter: color.cream, period: color.rose, glyphScale: 0.72 });
+const faviconSvg = monogram({ tile: color.plum, letter: color.ivory, accent: color.rose, glyphScale: 0.7 });
 files.push(write("favicon.svg", faviconSvg));
 
 // Square, unrounded art for platforms that apply their own mask.
-const appleSvg = monogram({ tile: color.plum, letter: color.cream, period: color.rose, rounded: false, glyphScale: 0.6 });
+const appleSvg = monogram({ tile: color.plum, letter: color.ivory, accent: color.rose, rounded: false, glyphScale: 0.58 });
 // Maskable: glyph inside the 80% safe zone, full-bleed background.
-const maskableSvg = monogram({ tile: color.plum, letter: color.cream, period: color.rose, rounded: false, glyphScale: 0.5 });
+const maskableSvg = monogram({ tile: color.plum, letter: color.ivory, accent: color.rose, rounded: false, glyphScale: 0.48 });
 
 const png = (svg, size) => sharp(Buffer.from(svg), { density: 384 }).resize(size, size).png().toBuffer();
 

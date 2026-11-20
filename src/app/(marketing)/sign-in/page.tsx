@@ -5,15 +5,16 @@ import { SignInForm } from "@/features/forms/auth-forms";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to your GlowHub workspace.",
+  description: "Sign in to your GlowHub AI workspace.",
+  alternates: { canonical: "/sign-in" },
 };
 
 export default function SignInPage() {
   return (
-    <div className="bg-white py-12 sm:py-20">
+    <div className="bg-ivory py-12 sm:py-20">
       <Container className="max-w-lg">
-        <Eyebrow>Prototype</Eyebrow>
-        <h1 className="mt-3 mb-6 font-display text-[2.375rem] leading-tight font-semibold">Sign in</h1>
+        <Eyebrow>Welcome back</Eyebrow>
+        <h1 className="mt-3 mb-8 font-display text-[2.5rem] leading-tight font-medium text-plum">Sign in</h1>
         <SignInForm />
       </Container>
     </div>

@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/bodoni-moda": "^5.3.0",
     "@fontsource/manrope": "^5.3.0",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4",

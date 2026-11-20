@@ -9,7 +9,6 @@ describe("parseConfig", () => {
     expect(config.appUrl).toBe("http://localhost:3000");
     expect(config.allowIndexing).toBe(false);
     expect(config.features).toEqual({
-      demoMode: true,
       cameraPreview: true,
       liveScan: false,
       marketplace: false,
@@ -24,7 +23,7 @@ describe("parseConfig", () => {
     "NEXT_PUBLIC_PAYMENTS_ENABLED",
   ])("refuses to enable %s", (flag) => {
     expect(() => parseConfig({ [flag]: "true" })).toThrow(
-      /cannot be enabled in the frontend prototype/,
+      /cannot be enabled until its release gates are met/,
     );
   });
 

@@ -25,10 +25,8 @@ describe("brand palette pairings", () => {
     },
   );
 
-  it("keeps base hibiscus rose out of normal-size text on cream", () => {
-    // Documents why rose700 exists: the brief's #B9527C is 4.34:1 on cream.
-    expect(contrastRatio(palette.rose, palette.cream)).toBeLessThan(
-      wcagMinimum.text,
-    );
+  it("keeps base rose out of normal-size text on ivory", () => {
+    // Documents why rose700 exists: base hibiscus rose is ~4.3:1 on ivory.
+    expect(contrastRatio(palette.rose, palette.ivory)).toBeLessThan(wcagMinimum.text);
   });
 });
